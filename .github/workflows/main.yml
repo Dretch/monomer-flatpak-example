@@ -73,5 +73,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: package
-        path: .stack-work/dist/*/*/monomer-hagrid-*.tar.gz
+        path: .stack-work/dist/*/*/monomer-flatpak-example-*.tar.gz
         if-no-files-found: error
