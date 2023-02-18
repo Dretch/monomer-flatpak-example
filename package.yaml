@@ -1,5 +1,5 @@
 name:                monomer-flatpak-example
-version:             0.0.1.0
+version:             0.0.2.0
 license:             MIT
 synopsis:            Monomer Flatpak Example Application.
 description:         An example of how to package Monomer apps with Flatpak.
@@ -25,6 +25,9 @@ default-extensions:
 - NamedFieldPuns
 - OverloadedRecordDot
 - OverloadedStrings
+
+data-dir: assets
+data-files: 'fonts/**/*'
 
 executables:
   monomer-flatpak-example:

@@ -5,6 +5,7 @@ import qualified Data.Sequence as Seq
 import Data.Text (Text, pack, unpack, unwords)
 import Monomer
 import Monomer.Hagrid
+import Paths_monomer_flatpak_example (getDataFileName)
 import System.Directory (getCurrentDirectory, getHomeDirectory, listDirectory)
 import Prelude hiding (unwords)
 
@@ -25,14 +26,14 @@ data AppEvent
 
 main :: IO ()
 main = do
-  startApp initialModel handleEvent buildUI config
+  regularFontPath <- pack <$> getDataFileName "/fonts/Cantarell/Cantarell-Regular.ttf"
+  startApp initialModel handleEvent buildUI (config regularFontPath)
   where
     initialModel = AppModel {environmentInfos = mempty}
-    config =
+    config regularFontPath =
       [ appTheme darkTheme,
         appWindowTitle "Monomer Flatpak Example",
-        appFontDef "Regular" "./assets/fonts/Cantarell/Cantarell-Regular.ttf",
-        appFontDef "Bold" "./assets/fonts/Cantarell/Cantarell-Bold.ttf",
+        appFontDef "Regular" regularFontPath,
         appDisableAutoScale True,
         appInitEvent AppInit
       ]
