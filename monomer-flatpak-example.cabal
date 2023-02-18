@@ -20,7 +20,7 @@ source-repository head
   type: git
   location: https://github.com/Dretch/monomer-flatpak-example
 
-executable app
+executable monomer-flatpak-example
   main-is: Main.hs
   other-modules:
       Paths_monomer_flatpak_example

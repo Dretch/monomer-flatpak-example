@@ -27,7 +27,7 @@ default-extensions:
 - OverloadedStrings
 
 executables:
-  app:
+  monomer-flatpak-example:
     main: Main.hs
     source-dirs: app
     ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
