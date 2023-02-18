@@ -1,0 +1,58 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           monomer-flatpak-example
+version:        0.0.1.0
+license:        MIT
+build-type:     Simple
+
+library
+  other-modules:
+      Paths_monomer_flatpak_example
+  hs-source-dirs:
+      src
+  default-extensions:
+      DisambiguateRecordFields
+      DuplicateRecordFields
+      FlexibleContexts
+      LambdaCase
+      NamedFieldPuns
+      OverloadedRecordDot
+      OverloadedStrings
+  ghc-options: -O2 -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , directory
+    , monomer
+    , monomer-hagrid
+    , text
+  default-language: Haskell2010
+
+executable app
+  main-is: Main.hs
+  other-modules:
+      Paths_monomer_flatpak_example
+  hs-source-dirs:
+      app
+  default-extensions:
+      DisambiguateRecordFields
+      DuplicateRecordFields
+      FlexibleContexts
+      LambdaCase
+      NamedFieldPuns
+      OverloadedRecordDot
+      OverloadedStrings
+  ghc-options: -O2 -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , directory
+    , monomer
+    , monomer-flatpak-example
+    , monomer-hagrid
+    , text
+  default-language: Haskell2010
