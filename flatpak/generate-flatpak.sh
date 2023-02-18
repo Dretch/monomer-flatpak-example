@@ -2,7 +2,7 @@
 
 set -ex
 
-VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../monomer-flatpak-example.cabal)
+VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../package.yaml)
 
 # create a cabal build plan for the published package
 (cd /tmp \

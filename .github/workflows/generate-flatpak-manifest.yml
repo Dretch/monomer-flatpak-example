@@ -13,22 +13,32 @@ jobs:
       run: 'echo "This will only work once the package is published on Hackage!"'
 
     - uses: actions/checkout@v3
-      
+    
+    - uses: actions/cache@v3
+      with:
+        key: stack
+        path: ~/.stack
+    
+    - uses: actions/cache@v3
+      with:
+        key: stack-work
+        path: .stack-work
+    
     - name: 'Install Stack'
       uses: haskell/actions/setup@v2
       with:
         stack-setup-ghc: true
         enable-stack: true
-    
+        ghc-version: '9.2.5'
+
     - name: 'Install Libraries'
       run: >
         sudo apt-get update
-        && sudo apt-get install --assume-yes jq
-        && cabal update
-        && cabal install --ignore-project cabal-flatpak
+        && sudo apt-get install --assume-yes libsdl2-dev libglew-dev jq
+        && stack install cabal-flatpak
 
     - name: 'Generate Manifest'
-      run: flatpak/generate-flatpak.sh
+      run: cd flatpak && ./generate-flatpak.sh
 
     - name: 'Archive Manifest'
       uses: actions/upload-artifact@v3
