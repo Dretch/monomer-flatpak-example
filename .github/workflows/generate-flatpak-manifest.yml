@@ -11,7 +11,8 @@ jobs:
 
     steps:
 
-    - name: 'Warning: this will only work once the package is published on Hackage!'
+    - name: 'Warning !!!'
+      run: 'echo "This will only work once the package is published on Hackage!"'
 
     - uses: actions/checkout@v3
       
