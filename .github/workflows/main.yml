@@ -66,10 +66,10 @@ jobs:
         stack-setup-ghc: true
         enable-stack: true
     
-    - name: 'Generate package'
+    - name: 'Generate Package'
       run: stack sdist
 
-    - name: 'Archive package'
+    - name: 'Archive Package'
       uses: actions/upload-artifact@v3
       with:
         name: package

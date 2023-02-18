@@ -1,0 +1,35 @@
+name: Generate Flatpak Manifest
+
+on: [workflow_dispatch]
+
+jobs:
+  generate-flatpak-manifest:
+
+    environment: flatpak
+
+    runs-on: ubuntu-22.04
+
+    steps:
+
+    - name: 'Warning: this will only work once the package is published on Hackage!'
+
+    - uses: actions/checkout@v3
+      
+    - name: 'Install Stack'
+      uses: haskell/actions/setup@v2
+      with:
+        stack-setup-ghc: true
+        enable-stack: true
+    
+    - name: 'Install Libraries'
+      run: sudo apt-get update && sudo apt-get install --assume-yes jq && cabal install cabal-flatpak
+
+    - name: 'Generate Manifest'
+      run: flatpak/generate-flatpak.sh
+
+    - name: 'Archive Manifest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: flatpak-manifest
+        path: flatpak/io.github.Dretch.MonomerFlatpakExample.json
+        if-no-files-found: error

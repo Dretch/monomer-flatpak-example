@@ -1,0 +1,24 @@
+{
+    "base": {
+        "app-id": "io.github.Dretch.MonomerFlatpakExample",
+        "runtime": "org.freedesktop.Platform",
+        "runtime-version": "22.08",
+        "sdk": "org.freedesktop.Sdk",
+        "command": "monomer-flatpak-example",
+        "finish-args": [
+            "--socket=x11",
+            "--socket=wayland",
+            "--share=ipc",
+            "--device=dri"
+        ],
+        "cleanup": [],
+        "cleanup-commands": [],
+        "modules": [
+            "modules/glu.json",
+            "modules/glew.json",
+            "modules/alex.json",
+            "modules/happy.json"
+        ]
+    },
+    "main-package": "monomer-flatpak-example"
+}
