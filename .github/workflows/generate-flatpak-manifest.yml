@@ -23,7 +23,11 @@ jobs:
         enable-stack: true
     
     - name: 'Install Libraries'
-      run: sudo apt-get update && sudo apt-get install --assume-yes jq && cabal install cabal-flatpak
+      run: >
+        sudo apt-get update
+        && sudo apt-get install --assume-yes jq
+        && cabal update
+        && cabal install cabal-flatpak
 
     - name: 'Generate Manifest'
       run: flatpak/generate-flatpak.sh
