@@ -3,15 +3,26 @@ name: CI
 on: [push]
 
 jobs:
-  check-formatting:
+  check-formatting-and-metadata:
 
     runs-on: ubuntu-22.04
 
     steps:
 
     - uses: actions/checkout@v3
+      
+    - name: 'Install Stack'
+      uses: haskell/actions/setup@v2
+      with:
+        stack-setup-ghc: true
+        enable-stack: true
 
-    - uses: mrkkrp/ormolu-action@v9
+    - name: 'Check formatting'
+      uses: mrkkrp/ormolu-action@v9
+
+    - name: 'Check package metadata'
+      run: cabal check
+
 
   build:
 
@@ -38,3 +49,29 @@ jobs:
         stack-setup-ghc: true
         enable-stack: true
     - run: stack test
+
+  package:
+
+    needs: [check-formatting-and-metadata, build]
+
+    runs-on: ubuntu-22.04
+
+    steps:
+
+    - uses: actions/checkout@v3
+      
+    - name: 'Install Stack'
+      uses: haskell/actions/setup@v2
+      with:
+        stack-setup-ghc: true
+        enable-stack: true
+    
+    - name: 'Generate package'
+      run: stack sdist
+
+    - name: 'Archive package'
+      uses: actions/upload-artifact@v3
+      with:
+        name: package
+        path: .stack-work/dist/*/*/monomer-hagrid-*.tar.gz
+        if-no-files-found: error
