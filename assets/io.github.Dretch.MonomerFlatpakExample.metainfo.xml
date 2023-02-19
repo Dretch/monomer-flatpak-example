@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.Dretch.MonomerFlatpakExample</id>
+  
+  <name>Monomer Flatpak Example</name>
+  <summary>Monomer Flatpak Example Application.</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  
+  <description>
+    <p>
+      An example of how to package Monomer apps with Flatpak.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">io.github.Dretch.MonomerFlatpakExample.desktop</launchable>
+</component>
