@@ -6,7 +6,7 @@
         "sdk": "org.freedesktop.Sdk",
         "command": "monomer-flatpak-example",
         "finish-args": [
-            "--socket=x11",
+            "--socket=fallback-x11",
             "--socket=wayland",
             "--share=ipc",
             "--device=dri"
