@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Monomer Flatpak Example
+Comment=An example of how to package Monomer apps with Flatpak.
+Exec=monomer-flatpak-example
+Type=Application
+Categories=Development

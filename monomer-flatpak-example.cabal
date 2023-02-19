@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           monomer-flatpak-example
-version:        0.0.2.1
+version:        0.0.2.2
 synopsis:       Monomer Flatpak Example Application.
 description:    An example of how to package Monomer apps with Flatpak.
 category:       GUI
@@ -18,6 +18,8 @@ build-type:     Simple
 data-files:
     fonts/Cantarell/Cantarell-Regular.ttf
     fonts/Cantarell/OFL.txt
+    io.github.Dretch.MonomerFlatpakExample.desktop
+    io.github.Dretch.MonomerFlatpakExample.png
 data-dir:       assets
 
 source-repository head

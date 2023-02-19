@@ -27,12 +27,14 @@ data AppEvent
 main :: IO ()
 main = do
   regularFontPath <- pack <$> getDataFileName "/fonts/Cantarell/Cantarell-Regular.ttf"
-  startApp initialModel handleEvent buildUI (config regularFontPath)
+  iconPath <- pack <$> getDataFileName "/io.github.Dretch.MonomerFlatpakExample.png"
+  startApp initialModel handleEvent buildUI (config regularFontPath iconPath)
   where
     initialModel = AppModel {environmentInfos = mempty}
-    config regularFontPath =
+    config regularFontPath iconPath =
       [ appTheme darkTheme,
         appWindowTitle "Monomer Flatpak Example",
+        appWindowIcon iconPath,
         appFontDef "Regular" regularFontPath,
         appDisableAutoScale True,
         appInitEvent AppInit
