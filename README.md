@@ -33,6 +33,10 @@ flatpak run io.github.Dretch.MonomerFlatpakExample
 ## FAQs
 - **Q. How to load fonts/images within the app?**
 - **A.** Use [the normal Cabal mechanism](https://neilmitchell.blogspot.com/2008/02/adding-data-files-using-cabal.html) (for example, see how the fonts are loaded in this app).
+- **Q. How to install an application launcher for the app?**
+- **Q.** Put a [.desktop file](assets/io.github.Dretch.MonomerFlatpakExample.desktop) and [icon file](assets/io.github.Dretch.MonomerFlatpakExample.png) into your Cabal package and then install them into the right place in the Flatpak using an [extra build script](flatpak/install-desktop-files.json) (referenced in [generate-manifest.sh](flatpak/generate-manifest.sh)).
+- **Q. How to install AppStream (app store) metadata?**
+- **A.** This can be done just like the desktop file, see [this app](assets) for an example.
 - **Q. Why do we need [flatpak/extra-libraries](flatpak/extra-libraries)?**
 - **A.** The cabal buld plan does not contain all the dependencies for Monomer, so we need to manually add the ones it does not have: in particular `nanovg` needs `glu`, `glew` and `c2hs` (which itself needs `language-c` which needs `happy` and `alex`).
 

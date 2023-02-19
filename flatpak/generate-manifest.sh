@@ -18,6 +18,6 @@ cabal-flatpak --directory=/tmp/monomer-flatpak-example-$VERSION io.github.Dretch
 # insert c2hs after language-c, since c2hs needs language-c and nanovg needs c2hs
 # insert desktop file installation at the end, because it needs assets from this app
 cat io.github.Dretch.MonomerFlatpakExample.json \
- | jq '.modules |= (map(if type == "object" and .name == "language-c" then [., "extra-libraries/c2hs.json"] else . end) | flatten) + ["install-desktop-files.sh"]' \
+ | jq '.modules |= (map(if type == "object" and .name == "language-c" then [., "extra-libraries/c2hs.json"] else . end) | flatten) + ["install-desktop-files.json"]' \
  > io.github.Dretch.MonomerFlatpakExample.json.fixed
 mv io.github.Dretch.MonomerFlatpakExample.json.fixed io.github.Dretch.MonomerFlatpakExample.json
