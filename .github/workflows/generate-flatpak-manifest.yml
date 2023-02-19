@@ -44,5 +44,8 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: flatpak-manifest
-        path: flatpak/io.github.Dretch.MonomerFlatpakExample.json
+        path: |
+          flatpak/extra-libraries/*.json
+          flatpak/install-desktop-files.json
+          flatpak/io.github.Dretch.MonomerFlatpakExample.json
         if-no-files-found: error
