@@ -14,10 +14,10 @@
         "cleanup": [],
         "cleanup-commands": [],
         "modules": [
-            "modules/glu.json",
-            "modules/glew.json",
-            "modules/alex.json",
-            "modules/happy.json"
+            "extra-libraries/glu.json",
+            "extra-libraries/glew.json",
+            "extra-libraries/alex.json",
+            "extra-libraries/happy.json"
         ]
     },
     "main-package": "monomer-flatpak-example"

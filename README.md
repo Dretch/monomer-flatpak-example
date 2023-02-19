@@ -13,7 +13,7 @@ Not yet working.
 - [JQ](https://stedolan.github.io/jq/).
 
 ## How to generate the Flatpak manifest
-See [generate-flatpak.sh](flatpak/generate-flatpak.sh).
+See [generate-manifest.sh](flatpak/generate-manifest.sh).
 
 ## How to build and install the Flatpak manifest locally
 ```bash
@@ -33,7 +33,7 @@ flatpak run io.github.Dretch.MonomerFlatpakExample
 ## FAQs
 - **Q. How to load fonts/images within the app?**
 - **A.** Use [the normal Cabal mechanism](https://neilmitchell.blogspot.com/2008/02/adding-data-files-using-cabal.html) (for example, see how the fonts are loaded in this app).
-- **Q. Why do we need [flatpak/modules](flatpak/modules)?**
+- **Q. Why do we need [flatpak/extra-libraries](flatpak/extra-libraries)?**
 - **A.** The cabal buld plan does not contain all the dependencies for Monomer, so we need to manually add the ones it does not have: in particular `nanovg` needs `glu`, `glew` and `c2hs` (which itself needs `language-c` which needs `happy` and `alex`).
 
 ## Gotchas

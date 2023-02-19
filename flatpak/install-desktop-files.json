@@ -1,0 +1,9 @@
+{
+    "name": "install-desktop-files",
+    "build-commands": [
+        "mkdir -p /app/share/applications",
+        "ln -s /app/share/*/monomer-flatpak-example-*/*.desktop /app/share/applications",
+        "mkdir -p /app/share/icons/hicolor/512x512/apps",
+        "ln -s /app/share/*/monomer-flatpak-example-*/*.png /app/share/icons/hicolor/512x512/apps",
+    ]
+}

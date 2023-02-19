@@ -38,7 +38,7 @@ jobs:
         && stack install cabal-flatpak
 
     - name: 'Generate Manifest'
-      run: cd flatpak && ./generate-flatpak.sh
+      run: cd flatpak && ./generate-manifest.sh
 
     - name: 'Archive Manifest'
       uses: actions/upload-artifact@v3
