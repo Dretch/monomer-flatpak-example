@@ -15,7 +15,11 @@
             "/bin/alex",
             "/bin/c2hs",
             "/bin/dev-test-app",
-            "/bin/happy"
+            "/bin/happy",
+            "/share/*-ghc-*/alex-*",
+            "/share/*-ghc-*/c2hs-*",
+            "/share/*-ghc-*/happy-*",
+            "/share/*-ghc-*/sdl2-*"
         ],
         "cleanup-commands": [],
         "modules": [
