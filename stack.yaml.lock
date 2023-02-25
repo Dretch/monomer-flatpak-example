@@ -12,12 +12,12 @@ packages:
   original:
     hackage: monomer-1.5.1.0
 - completed:
-    hackage: monomer-hagrid-0.2.1.0@sha256:809393e5fa95a5dde93628aca8d28364fbae1f89b6c71595451ee61de927f575,4682
+    hackage: monomer-hagrid-0.2.1.1@sha256:29245a958533b86c5b87004fd767c72871795ce2fd598417c388a1402fb9f518,4908
     pantry-tree:
-      sha256: 38cdad8df130e2c010593483e38c4360886ff86b6496c3499066ceb24f4cd81e
+      sha256: 3e6f805e4e2cf92a9e0b3fb9c72f979e06040810dca43195539e38c981ea33eb
       size: 658
   original:
-    hackage: monomer-hagrid-0.2.1.0
+    hackage: monomer-hagrid-0.2.1.1
 snapshots:
 - completed:
     sha256: 17870c63f8041ac17a38096124abeb953cb14d84bfc96deb88f9b24daa97b347
