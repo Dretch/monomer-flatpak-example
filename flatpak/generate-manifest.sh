@@ -13,7 +13,7 @@ VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../package.yaml)
  && cabal new-build --dry-run --disable-tests --disable-benchmarks --with-compiler=ghc-9.2.5)
 
 # add packages from the cabal build plan into our template flatpak manifest
-cabal-flatpak --directory=/tmp/monomer-flatpak-example-$VERSION io.github.Dretch.MonomerFlatpakExample.template.json io.github.Dretch.MonomerFlatpakExample.json
+cabal-flatpak --arch=x86_64 --directory=/tmp/monomer-flatpak-example-$VERSION io.github.Dretch.MonomerFlatpakExample.template.json io.github.Dretch.MonomerFlatpakExample.json
 
 # insert c2hs after language-c, since c2hs needs language-c and nanovg needs c2hs
 # insert desktop file installation at the end, because it needs assets from this app

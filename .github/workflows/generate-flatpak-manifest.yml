@@ -45,6 +45,8 @@ jobs:
       with:
         name: flatpak-manifest
         path: |
+          flatpak/README.md
+          flatpak/flathub.json
           flatpak/extra-libraries/*.json
           flatpak/install-desktop-files.json
           flatpak/io.github.Dretch.MonomerFlatpakExample.json

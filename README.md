@@ -44,6 +44,7 @@ flatpak run io.github.Dretch.MonomerFlatpakExample
 - This process requires your application (not just the libraries it depends on) to be published on Hackage - this might not be something you would otherwise bother with. Changes to `cabal-flatpak` could in theory avoid this requirement - since Flatpak could pull directly from Git tags rather than from Hackage.
 - If any of the Haskell libraries your app depends on are building executables, these will be included in the Flatpak too, increasing the size. You will probably need to add the executables to `cleanup` to avoid this (see [this manifest template for this example](flatpak/io.github.Dretch.MonomerFlatpakExample.template.json)).
 - Building the Flatpak the first time is really slow. Subsequent builds will use a cache, though.
+- This is currently x86_64 only, because the author lacks any other machines to test on (if you can test on other architectures, please open an issue/PR).
 
 ## Development Guide
 ### To format the source code
