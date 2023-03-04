@@ -12,6 +12,7 @@
             "--device=dri"
         ],
         "cleanup": [
+            "/lib/ghc-*",
             "/bin/alex",
             "/bin/c2hs",
             "/bin/dev-test-app",
@@ -24,9 +25,7 @@
         "cleanup-commands": [],
         "modules": [
             "shared-modules/glu/glu-9.json",
-            "shared-modules/glew/glew.json",
-            "extra-libraries/alex.json",
-            "extra-libraries/happy.json"
+            "shared-modules/glew/glew.json"
         ]
     },
     "main-package": "monomer-flatpak-example"
