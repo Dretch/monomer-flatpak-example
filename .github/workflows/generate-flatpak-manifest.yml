@@ -32,10 +32,7 @@ jobs:
         ghc-version: '9.2.5'
 
     - name: 'Install Libraries'
-      run: >
-        sudo apt-get update
-        && sudo apt-get install --assume-yes libsdl2-dev libglew-dev jq
-        && stack install cabal-flatpak
+      run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev jq
 
     - name: 'Generate Manifest'
       run: cd flatpak && ./generate-manifest.sh
@@ -47,7 +44,5 @@ jobs:
         path: |
           flatpak/README.md
           flatpak/flathub.json
-          flatpak/extra-libraries/*.json
-          flatpak/install-desktop-files.json
           flatpak/io.github.Dretch.MonomerFlatpakExample.json
         if-no-files-found: error
