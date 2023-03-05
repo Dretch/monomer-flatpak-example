@@ -22,6 +22,7 @@ VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../package.yaml)
  && cd cabal-flatpak \
  && cabal build \
  && cabal run cabal-flatpak -- \
+  --cabal-install \
   --arch=x86_64 \
   --build-library-exes \
   --directory=/tmp/monomer-flatpak-example-$VERSION \
