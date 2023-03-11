@@ -16,7 +16,14 @@
 
   <url type="homepage">https://github.com/Dretch/monomer-flatpak-example#readme</url>
 
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://github.com/Dretch/monomer-flatpak-example/blob/master/readme/screenshot.png?raw=true</image>
+    </screenshot>
+  </screenshots>
+
   <releases>
+    <release version="0.0.3.1" date="2023-03-11"/>
     <release version="0.0.3.0" date="2023-03-10"/>
     <release version="0.0.2.6" date="2023-02-25"/>
   </releases>
