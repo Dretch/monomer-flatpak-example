@@ -13,14 +13,14 @@ The basic app is working as a Flatpak and has also been published onto [Flathub]
 
 ## How It Works
 - A patched version of [cabal-flatpak](https://hub.darcs.net/Dretch/cabal-flatpak) is used to generate the basic Flatpak manifest. 
-- [JQ](https://stedolan.github.io/jq/) is then used to inject an extra script that installs extra files needed by Flathub.
+- Then an extra build step is injected that installs metadata files needed by Flathub.
 - The process is automated in [generate-manifest.sh](flatpak/generate-manifest.sh), and is also setup to run via [a Github action](.github/workflows/generate-flatpak-manifest.yml).
 - The generated manifest can then be tested locally:
     ```bash
     FLATPAK=~/flatpak
 
     # build the flatpak manifest and install into a local repository
-    flatpak-builder --force-clean --repo=$FLATPAK/repository --state-dir=$FLATPAK/builder/ $FLATPAK/build/io.github.Dretch.MonomerFlatpakExample flatpak/io.github.Dretch.MonomerFlatpakExample.json
+    flatpak-builder --force-clean --repo=$FLATPAK/repository --state-dir=$FLATPAK/builder/ $FLATPAK/build/io.github.Dretch.MonomerFlatpakExample flatpak/io.github.Dretch.MonomerFlatpakExample.yml
 
     # point our local flatpak at our local repository, and install the app from it
     flatpak --user remote-add --no-gpg-verify home-repository $FLATPAK/repository
@@ -39,7 +39,7 @@ The basic app is working as a Flatpak and has also been published onto [Flathub]
 - **Q. How to install AppStream (app store) metadata?**
 - **A.** This can be done just like the desktop file, see [this app](assets) for an example.
 - **Q. Why do we need a patched cabal-flatpak?**
-- **A.** Various changes ([ordered fields](https://hub.darcs.net/Dretch/cabal-flatpak/patch/ecf87866d528f64467c9aba29966580375ed9539), [library executables](https://hub.darcs.net/Dretch/cabal-flatpak/patch/2367c54fd2150d01cc0fd069c8b4aca4c1b84469), [smaller manifests](https://hub.darcs.net/Dretch/cabal-flatpak/patch/974f6ea451aa978e2c44fe26c3b29c1b532d1efb)), were needed to get `cabal-flatpak` to generate a manifest that would be accepted onto Flathub. The author will try and get these changes upstreamed.
+- **A.** The patches make cabal-flatpak include library executables (alex, happy, c2hs) into the Flatpak manifest. The author will try and get this change upstreamed.
 
 ## Gotchas
 - This process requires your application (not just the libraries it depends on) to be published on Hackage - this might not be something you would otherwise bother with. Changes to `cabal-flatpak` could in theory avoid this requirement - since Flatpak could pull directly from Git tags rather than from Hackage.
