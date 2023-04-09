@@ -11,7 +11,7 @@ where
 
 import Control.Concurrent (MVar, readMVar, tryPutMVar)
 import Control.Concurrent.MVar (newEmptyMVar)
-import Control.Exception (throwIO, onException)
+import Control.Exception (onException, throwIO)
 import Control.Monad (when)
 import DBus (BusName, InterfaceName, MemberName, MethodCall, ObjectPath)
 import DBus qualified
@@ -156,8 +156,9 @@ sendRequest interface memberName parameters options parseResponse = do
           | Just (objX :: ObjectPath) <- DBus.fromVariant x ->
               if objX == handle
                 then pure (Request client methodCall resultVar)
-                else throwIO (DBus.clientError (
-                  "Unexpected handle: " <> show objX <> " should be " <> show handle <> ". Probably xdg-desktop-portal is too old."))
+                else
+                  let msg = "Unexpected handle: " <> show objX <> " should be " <> show handle <> ". Probably xdg-desktop-portal is too old."
+                   in throwIO (DBus.clientError msg)
         _ ->
           throwIO (DBus.clientError ("Request reply in unexpected format: " <> show reply))
 
