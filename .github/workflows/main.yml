@@ -75,12 +75,24 @@ jobs:
         name: package
         path: .stack-work/dist/*/*/monomer-flatpak-example-*.tar.gz
         if-no-files-found: error
-    
+  
+  publish:
+  
+    needs: [package]
+
+    runs-on: ubuntu-22.04
+
+    environment:
+      name: hackage
+      url: https://hackage.haskell.org/package/monomer-flatpak-example
+
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: package
+
     - name: 'Publish Package to Hackage'
-      environment:
-        name: hackage
-        url: https://hackage.haskell.org/package/monomer-flatpak-example
-      run: cabal sdist | tail -n 1 | xargs cabal upload -u "$HACKAGE_USERNAME" -p "$HACKAGE_PASSWORD"
+      run: cabal upload -u "$HACKAGE_USERNAME" -p "$HACKAGE_PASSWORD" */*/*.tar.gz
       env:
         HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
         HACKAGE_PASSWORD: ${{ secrets.HACKAGE_USERNAME }}
