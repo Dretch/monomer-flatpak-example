@@ -3,34 +3,11 @@ name: CI
 on: [push]
 
 jobs:
-  check-formatting-and-metadata:
-
-    runs-on: ubuntu-22.04
-
-    steps:
-
-    - uses: actions/checkout@v3
-      
-    - name: 'Install Stack'
-      uses: haskell/actions/setup@v2
-      with:
-        stack-setup-ghc: true
-        enable-stack: true
-
-    - name: 'Check formatting'
-      uses: mrkkrp/ormolu-action@v9
-
-    - name: 'Check package metadata'
-      run: cabal check
-
-
   build:
 
     runs-on: ubuntu-22.04
 
     steps:
-
-    - run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev
 
     - uses: actions/checkout@v3
 
@@ -44,28 +21,22 @@ jobs:
         key: stack-work
         path: .stack-work
   
+    - name: 'Check formatting'
+      uses: mrkkrp/ormolu-action@v9
+
+    - run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev
+
     - uses: haskell/actions/setup@v2
       with:
         stack-setup-ghc: true
         enable-stack: true
-    - run: stack test
 
-  package:
+    - name: 'Check package metadata'
+      run: cabal check
 
-    needs: [check-formatting-and-metadata, build]
+    - name: 'Build and Test'
+      run: stack test
 
-    runs-on: ubuntu-22.04
-
-    steps:
-
-    - uses: actions/checkout@v3
-      
-    - name: 'Install Stack'
-      uses: haskell/actions/setup@v2
-      with:
-        stack-setup-ghc: true
-        enable-stack: true
-    
     - name: 'Generate Package'
       run: stack sdist
 
@@ -78,7 +49,7 @@ jobs:
   
   publish:
   
-    needs: [package]
+    needs: [build]
 
     runs-on: ubuntu-22.04
 
