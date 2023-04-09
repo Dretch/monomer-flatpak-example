@@ -95,4 +95,4 @@ jobs:
       run: cabal upload -u "$HACKAGE_USERNAME" -p "$HACKAGE_PASSWORD" */*/*.tar.gz
       env:
         HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
-        HACKAGE_PASSWORD: ${{ secrets.HACKAGE_USERNAME }}
+        HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
