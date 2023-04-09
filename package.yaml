@@ -1,5 +1,5 @@
 name:                monomer-flatpak-example
-version:             0.0.4.0
+version:             0.0.5.0
 license:             MIT
 synopsis:            Monomer Flatpak Example Application.
 description:         An example of how to package Monomer apps with Flatpak.
@@ -12,19 +12,25 @@ maintainer:          garethdanielsmith@gmail.com
 dependencies:
 - base >= 4.7 && < 5
 - containers
+- data-default-class
+- dbus
 - directory
 - monomer
 - monomer-hagrid
+- random
 - text
 
 default-extensions:
 - DisambiguateRecordFields
 - DuplicateRecordFields
 - FlexibleContexts
+- ImportQualifiedPost
 - LambdaCase
 - NamedFieldPuns
 - OverloadedRecordDot
 - OverloadedStrings
+- RecordWildCards
+- ScopedTypeVariables
 
 data-dir: assets
 data-files: '**/*'

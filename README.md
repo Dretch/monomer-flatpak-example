@@ -9,7 +9,7 @@ The Flatpak manifest generated for this app builds everything from source. This 
 ![Screenshot](readme/screenshot.png)
 
 ## Current Status
-The basic app is working as a Flatpak and has also been published onto [Flathub](https://flathub.org/apps/details/io.github.Dretch.MonomerFlatpakExample). No Portals demo yet.
+The basic app is working as a Flatpak and has also been published onto [Flathub](https://flathub.org/apps/details/io.github.Dretch.MonomerFlatpakExample). The app includes a basic portals demo.
 
 ## How It Works
 - A patched version of [cabal-flatpak](https://hub.darcs.net/Dretch/cabal-flatpak) is used to generate the basic Flatpak manifest. 
@@ -31,6 +31,9 @@ The basic app is working as a Flatpak and has also been published onto [Flathub]
     ```
 - You can also publish on Flathub, by following [the normal process](https://github.com/flathub/flathub/wiki/App-Submission).
 
+## Portals
+The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) allow reading/writing files, accessing microphones/webcams, opening URIs, printing, etc. This app currently shows how they can be used to access user information and open files. The author intends to extract the [code that implements this](app/Desktop/Portal.hs) into a proper library with more features, documentation and tests.
+
 ## FAQs
 - **Q. How to load fonts/images within the app?**
 - **A.** Use [the normal Cabal mechanism](https://neilmitchell.blogspot.com/2008/02/adding-data-files-using-cabal.html) (for example, see how the fonts are loaded in this app).
@@ -40,8 +43,11 @@ The basic app is working as a Flatpak and has also been published onto [Flathub]
 - **A.** This can be done just like the desktop file, see [this app](assets) for an example.
 - **Q. Why do we need a patched cabal-flatpak?**
 - **A.** The patches make cabal-flatpak include library executables (alex, happy, c2hs) into the Flatpak manifest. The author will try and get this change upstreamed.
+- **Q. Can portals be tested without building the Flatpak?**
+- **A.** Yes! The portal APIs work from regular executables, so long as Flatpak is installed.
 
 ## Gotchas
+- Flatpak is Linux only, whereas Monomer itself also works on Windows and MacOS.
 - This process requires your application (not just the libraries it depends on) to be published on Hackage - this might not be something you would otherwise bother with. Changes to `cabal-flatpak` could in theory avoid this requirement - since Flatpak could pull directly from Git tags rather than from Hackage.
 - All the libraries your app needs must be on Hackage too. Again in theory you could use Git to work around this.
 - If any of the Haskell libraries your app depends on are building executables, these will be included in the Flatpak too, increasing the size. You will probably need to add the executables to `cleanup` to avoid this (see [this manifest template for this example](flatpak/io.github.Dretch.MonomerFlatpakExample.template.json)).

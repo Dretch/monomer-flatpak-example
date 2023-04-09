@@ -18,6 +18,13 @@ packages:
       size: 658
   original:
     hackage: monomer-hagrid-0.2.1.1
+- completed:
+    hackage: dbus-1.2.28@sha256:2f6b95393e32c9be8352796059e738e814a9b9a1131f6fad6578dca0355e80d4,4562
+    pantry-tree:
+      sha256: 0759d768313f0d64ec241329985ccdfd64706a2f1bc0de2eb73278f569bfbd22
+      size: 2795
+  original:
+    hackage: dbus-1.2.28
 snapshots:
 - completed:
     sha256: 14ca51a9a597c32dd7804c10d079feea3d0ae40c5fbbb346cbd67b3ae49f6d01
