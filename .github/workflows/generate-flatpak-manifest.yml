@@ -34,22 +34,3 @@ jobs:
           flatpak/flathub.json
           flatpak/io.github.Dretch.MonomerFlatpakExample.yml
         if-no-files-found: error
-  
-  make-pull-request:
-
-    runs-on: ubuntu-22.04
-
-    needs: [generate-flatpak-manifest]
-
-    steps:
-
-    - uses: actions/checkout@v3
-      with:
-        repository: flathub/io.github.Dretch.MonomerFlatpakExample
-
-    - uses: actions/download-artifact@v3
-      with:
-        name: flatpak-manifest
-
-    - name: 'Create Pull Request'
-      uses: peter-evans/create-pull-request@v5
