@@ -63,7 +63,7 @@ jobs:
         name: package
 
     - name: 'Publish Package to Hackage'
-      run: cabal upload -u "$HACKAGE_USERNAME" -p "$HACKAGE_PASSWORD" */*/*.tar.gz
+      run: cabal upload --publish -u "$HACKAGE_USERNAME" -p "$HACKAGE_PASSWORD" */*/*.tar.gz
       env:
         HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
         HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
