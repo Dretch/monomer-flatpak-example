@@ -21,4 +21,6 @@ cabal.project.local~
 .HTF/
 .ghc.environment.*
 .notes
+.flatpak-builder
 flatpak/io.github.Dretch.MonomerFlatpakExample.yml
+flatpak/io.github.Dretch.test.yml

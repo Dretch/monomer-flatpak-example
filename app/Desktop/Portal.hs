@@ -13,7 +13,7 @@ import Control.Concurrent (MVar, readMVar, tryPutMVar)
 import Control.Concurrent.MVar (newEmptyMVar)
 import Control.Exception (onException, throwIO)
 import Control.Monad (when)
-import DBus (BusName, InterfaceName, MemberName, MethodCall, ObjectPath)
+import DBus (BusName, InterfaceName, IsVariant, MemberName, MethodCall, ObjectPath)
 import DBus qualified
 import DBus.Client (Client, MatchRule (..))
 import DBus.Client qualified as DBus
@@ -30,7 +30,7 @@ import System.Random.Stateful qualified as R
 data GetUserInformationResponse = GetUserInformationResponse
   { userId :: Text,
     userName :: Text,
-    userImage :: Text
+    userImage :: Maybe Text
   }
   deriving (Eq, Show)
 
@@ -84,10 +84,10 @@ getUserInformation reason =
       resMap
         | Just userId <- DBus.fromVariant =<< Map.lookup "id" resMap,
           Just userName <- DBus.fromVariant =<< Map.lookup "name" resMap,
-          Just userImage <- DBus.fromVariant =<< Map.lookup "image" resMap ->
+          Just userImage <- optionalFromVariant resMap "image" ->
             pure GetUserInformationResponse {..}
-      _ ->
-        throwIO (DBus.clientError "getUserInformation: could not parse response")
+      resMap ->
+        throwIO . DBus.clientError $ "getUserInformation: could not parse response: " <> show resMap
 
 openFile :: OpenFileOptions -> IO (Request [Text])
 openFile ofOptions =
@@ -100,8 +100,8 @@ openFile ofOptions =
       resMap
         | Just (uris :: [Text]) <- DBus.fromVariant =<< Map.lookup "uris" resMap ->
             pure uris
-      _ ->
-        throwIO (DBus.clientError "openFile: could not parse response")
+      resMap ->
+        throwIO . DBus.clientError $ "openFile: could not parse response: " <> show resMap
 
 sendRequest ::
   InterfaceName ->
@@ -181,3 +181,11 @@ requestHandle clientName = do
   where
     escapeClientName =
       map (\case '.' -> '_'; c -> c) . drop 1 . DBus.formatBusName
+
+-- | Returns @Just Nothing@ if the field does not exist, @Just (Just x)@ if it does exist and
+-- can be turned into the expected type, or @Nothing@ if the field exists with the wrong type.
+optionalFromVariant :: forall a. IsVariant a => Map Text Variant -> Text -> Maybe (Maybe a)
+optionalFromVariant key variants =
+  case Map.lookup variants key of
+    Nothing -> Just Nothing
+    Just var -> Just <$> DBus.fromVariant var

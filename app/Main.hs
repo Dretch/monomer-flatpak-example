@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Data.Default.Class (def)
+import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
 import Data.Text (Text, intercalate, pack, unpack)
@@ -133,7 +134,7 @@ buildUI _wenv model = tree
         [ label "Request successful.",
           label ("User Id: " <> response.userId),
           label ("User Name: " <> response.userName),
-          label ("User Image: " <> response.userImage)
+          label ("User Image: " <> fromMaybe "[none]" response.userImage)
         ]
 
     openFileAlertContents files =
