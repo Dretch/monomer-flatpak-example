@@ -38,7 +38,7 @@ The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) all
 - **Q. How to load fonts/images within the app?**
 - **A.** Use [the normal Cabal mechanism](https://neilmitchell.blogspot.com/2008/02/adding-data-files-using-cabal.html) (for example, see how the fonts are loaded in this app).
 - **Q. How to install an application launcher for the app?**
-- **Q.** Put a [.desktop file](assets/io.github.Dretch.MonomerFlatpakExample.desktop) and [icon file](assets/io.github.Dretch.MonomerFlatpakExample.png) into your Cabal package and then install them into the right place in the Flatpak using an [extra build script](flatpak/install-desktop-files.json) (referenced in [generate-manifest.sh](flatpak/generate-manifest.sh)).
+- **Q.** Put a [.desktop file](assets/io.github.Dretch.MonomerFlatpakExample.desktop) and [icon file](assets/io.github.Dretch.MonomerFlatpakExample.png) into your Cabal package and then install them into the right place in the Flatpak using an extra build step (see build step injection in  [generate-manifest.sh](flatpak/generate-manifest.sh)).
 - **Q. How to install AppStream (app store) metadata?**
 - **A.** This can be done just like the desktop file, see [this app](assets) for an example.
 - **Q. Why do we need a patched cabal-flatpak?**
@@ -50,7 +50,7 @@ The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) all
 - Flatpak is Linux only, whereas Monomer itself also works on Windows and MacOS.
 - This process requires your application (not just the libraries it depends on) to be published on Hackage - this might not be something you would otherwise bother with. Changes to `cabal-flatpak` could in theory avoid this requirement - since Flatpak could pull directly from Git tags rather than from Hackage.
 - All the libraries your app needs must be on Hackage too. Again in theory you could use Git to work around this.
-- If any of the Haskell libraries your app depends on are building executables, these will be included in the Flatpak too, increasing the size. You will probably need to add the executables to `cleanup` to avoid this (see [this manifest template for this example](flatpak/io.github.Dretch.MonomerFlatpakExample.template.json)).
+- If any of the Haskell libraries your app depends on are building executables, these will be included in the Flatpak too, increasing the size. You will probably need to add the executables to `cleanup` to avoid this (see [the manifest template for this example](flatpak/io.github.Dretch.MonomerFlatpakExample.template.yml)).
 - Building the Flatpak the first time is really slow. Subsequent builds will be a bit faster, though.
 - This project is currently x86_64 only, because the author lacks any other machines to test on (if you can test on other architectures, please open an issue/PR).
 
