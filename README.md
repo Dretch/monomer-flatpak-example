@@ -32,7 +32,7 @@ The basic app is working as a Flatpak and has also been published onto [Flathub]
 - You can also publish on Flathub, by following [the normal process](https://github.com/flathub/flathub/wiki/App-Submission).
 
 ## Portals
-The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) allow reading/writing files, accessing microphones/webcams, opening URIs, printing, etc. This app currently shows how they can be used to access user information and open files. The author intends to extract the [code that implements this](app/Desktop/Portal.hs) into a proper library with more features, documentation and tests.
+The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) allow reading/writing files, accessing microphones/webcams, opening URIs, printing, etc. This app currently shows how they can be used to access user information and open files. The [desktop-portal](https://github.com/Dretch/haskell-desktop-portal) library provides an easy-to-use API client.
 
 ## FAQs
 - **Q. How to load fonts/images within the app?**

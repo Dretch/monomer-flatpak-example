@@ -1,12 +1,12 @@
 name:                monomer-flatpak-example
-version:             0.0.5.1
+version:             0.0.6.0
 license:             MIT
 synopsis:            Monomer Flatpak Example Application.
 description:         An example of how to package Monomer apps with Flatpak.
 github:              Dretch/monomer-flatpak-example
 homepage:            https://github.com/Dretch/monomer-flatpak-example#readme
 bug-reports:         https://github.com/Dretch/monomer-flatpak-example/issues
-category:            GUI
+category:            GUI, Flatpak
 maintainer:          garethdanielsmith@gmail.com
 
 dependencies:
@@ -14,6 +14,7 @@ dependencies:
 - containers
 - data-default-class
 - dbus
+- desktop-portal
 - directory
 - monomer
 - monomer-hagrid
@@ -27,6 +28,7 @@ default-extensions:
 - ImportQualifiedPost
 - LambdaCase
 - NamedFieldPuns
+- NoFieldSelectors
 - OverloadedRecordDot
 - OverloadedStrings
 - RecordWildCards

@@ -5,10 +5,10 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           monomer-flatpak-example
-version:        0.0.5.1
+version:        0.0.6.0
 synopsis:       Monomer Flatpak Example Application.
 description:    An example of how to package Monomer apps with Flatpak.
-category:       GUI
+category:       GUI, Flatpak
 homepage:       https://github.com/Dretch/monomer-flatpak-example#readme
 bug-reports:    https://github.com/Dretch/monomer-flatpak-example/issues
 maintainer:     garethdanielsmith@gmail.com
@@ -31,7 +31,6 @@ source-repository head
 executable monomer-flatpak-example
   main-is: Main.hs
   other-modules:
-      Desktop.Portal
       Paths_monomer_flatpak_example
   hs-source-dirs:
       app
@@ -42,6 +41,7 @@ executable monomer-flatpak-example
       ImportQualifiedPost
       LambdaCase
       NamedFieldPuns
+      NoFieldSelectors
       OverloadedRecordDot
       OverloadedStrings
       RecordWildCards
@@ -52,6 +52,7 @@ executable monomer-flatpak-example
     , containers
     , data-default-class
     , dbus
+    , desktop-portal
     , directory
     , monomer
     , monomer-hagrid

@@ -5,7 +5,7 @@ import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
 import Data.Text (Text, intercalate, pack, unpack)
-import Desktop.Portal (GetUserInformationResponse (..), Request)
+import Desktop.Portal (GetUserInformationOptions (..), GetUserInformationResults (..), OpenFileResults (..), Request)
 import Desktop.Portal qualified as Portal
 import Monomer
 import Monomer.Hagrid
@@ -29,21 +29,21 @@ data EnvironmentInfo = EnvironmentInfo
 
 data AlertContents
   = AlertNotShown
-  | AlertRequestingUserInformation (Request GetUserInformationResponse)
-  | AlertUserInformation GetUserInformationResponse
-  | AlertRequestingOpenFile (Request [Text])
-  | AlertOpenFile [Text]
+  | AlertRequestingUserInformation (Request GetUserInformationResults)
+  | AlertUserInformation GetUserInformationResults
+  | AlertRequestingOpenFile (Request OpenFileResults)
+  | AlertOpenFile OpenFileResults
   deriving (Eq, Show)
 
 data AppEvent
   = AppInit
   | AppInitFinish (Seq EnvironmentInfo) (Seq EnvironmentInfo)
   | GetUserInformation
-  | GetUserInformationStart (Request GetUserInformationResponse)
-  | GetUserInformationFinish GetUserInformationResponse
+  | GetUserInformationStart (Request GetUserInformationResults)
+  | GetUserInformationFinish GetUserInformationResults
   | OpenFile
-  | OpenFileStart (Request [Text])
-  | OpenFileFinish [Text]
+  | OpenFileStart (Request OpenFileResults)
+  | OpenFileFinish OpenFileResults
   | CancelRequest
   | CloseAlert
 
@@ -122,23 +122,28 @@ buildUI _wenv model = tree
           CloseAlert
           [titleCaption "Get User Information Response"]
           (userInfoAlertContents info `styleBasic` [padding 20])
-      AlertOpenFile files ->
+      AlertOpenFile results ->
         alert_
           CloseAlert
           [titleCaption "Open File Response"]
-          (openFileAlertContents files `styleBasic` [padding 20])
+          (openFileAlertContents results `styleBasic` [padding 20])
 
-    userInfoAlertContents response =
+    userInfoAlertContents results =
       vstack_
         [childSpacing]
         [ label "Request successful.",
-          label ("User Id: " <> response.userId),
-          label ("User Name: " <> response.userName),
-          label ("User Image: " <> fromMaybe "[none]" response.userImage)
+          label ("User Id: " <> results.id),
+          label ("User Name: " <> results.name),
+          label ("User Image: " <> fromMaybe "[none]" results.image)
         ]
 
-    openFileAlertContents files =
-      label ("Selected files: " <> intercalate ", " files)
+    openFileAlertContents results =
+      vstack_
+        [childSpacing]
+        [ label "Request successful.",
+          label ("Selected URIs: " <> intercalate ", " results.uris),
+          label ("Selected Choices: " <> pack (show results.choices))
+        ]
 
 valueColumn :: Int -> EnvironmentInfo -> WidgetNode s e
 valueColumn _ix model =
@@ -170,7 +175,11 @@ handleEvent _wenv _node model = \case
     [Model model {fileSystem, environmentVariables}]
   GetUserInformation ->
     [ Producer $ \emit -> do
-        res <- Portal.getUserInformation "Allows FlatpakMonomerExample to show user information."
+        res <-
+          Portal.getUserInformation
+            def
+              { reason = Just "Allows FlatpakMonomerExample to show user information."
+              }
         emit (GetUserInformationStart res)
         Portal.await res >>= \case
           Nothing -> emit CloseAlert
@@ -190,8 +199,8 @@ handleEvent _wenv _node model = \case
     ]
   OpenFileStart res ->
     [Model model {alertContents = AlertRequestingOpenFile res}]
-  OpenFileFinish files ->
-    [Model model {alertContents = AlertOpenFile files}]
+  OpenFileFinish results ->
+    [Model model {alertContents = AlertOpenFile results}]
   CancelRequest ->
     let cancel = case model.alertContents of
           AlertRequestingOpenFile res ->
