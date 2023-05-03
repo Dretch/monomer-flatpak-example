@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: desktop-portal-0.0.1.0@sha256:7bf7617d6d9e93250c96caaab53a5e14e17f601b83a877c6775b14ce2e26e8a8,2760
+    hackage: desktop-portal-0.1.0.0@sha256:2cc19a82f39747cf161009131808d6721e77aac454c7e36925f2454a94501e2f,2825
     pantry-tree:
-      sha256: 65260b88970daab98be7710f9528283f3cfa4682be9958e1969d4561d9b8cffb
-      size: 910
+      sha256: 6aaed8cc5b7e04d175e9e51ce0ef2763320f6e7774e01ff98288adaf1ca2514b
+      size: 989
   original:
-    hackage: desktop-portal-0.0.1.0
+    hackage: desktop-portal-0.1.0.0
 - completed:
     hackage: monomer-1.5.1.0@sha256:18e3ce60c7f5d3fae74bf5ace7515f0e252b12ccc4b71030f948e6fdc1f49a99,16741
     pantry-tree:

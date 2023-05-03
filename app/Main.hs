@@ -1,11 +1,14 @@
 module Main (main) where
 
+import Control.Monad (void)
+import DBus (Variant, toVariant)
 import Data.Default.Class (def)
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
 import Data.Text (Text, intercalate, pack, unpack)
-import Desktop.Portal (GetUserInformationOptions (..), GetUserInformationResults (..), OpenFileResults (..), Request)
+import Data.Word (Word32)
+import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), OpenFileResults (..), Request, addNotificationOptions)
 import Desktop.Portal qualified as Portal
 import Monomer
 import Monomer.Hagrid
@@ -15,7 +18,8 @@ import System.Environment (getEnvironment)
 import Prelude hiding (unwords)
 
 data AppModel = AppModel
-  { fileSystem :: Seq EnvironmentInfo,
+  { portalClient :: Client,
+    fileSystem :: Seq EnvironmentInfo,
     environmentVariables :: Seq EnvironmentInfo,
     alertContents :: AlertContents
   }
@@ -44,6 +48,7 @@ data AppEvent
   | OpenFile
   | OpenFileStart (Request OpenFileResults)
   | OpenFileFinish OpenFileResults
+  | AddNotification
   | CancelRequest
   | CloseAlert
 
@@ -52,11 +57,14 @@ main = do
   regularFontPath <- pack <$> getDataFileName "/fonts/Cantarell/Cantarell-Regular.ttf"
   boldFontPath <- pack <$> getDataFileName "/fonts/Cantarell/Cantarell-Bold.ttf"
   iconPath <- pack <$> getDataFileName "/io.github.Dretch.MonomerFlatpakExample.png"
-  startApp initialModel handleEvent buildUI (config regularFontPath boldFontPath iconPath)
+  portalClient <- Portal.connect
+  void (Portal.handleNotificationActionInvoked portalClient handleNotificationAction)
+  startApp (initialModel portalClient) handleEvent buildUI (config regularFontPath boldFontPath iconPath)
   where
-    initialModel =
+    initialModel portalClient =
       AppModel
-        { fileSystem = mempty,
+        { portalClient,
+          fileSystem = mempty,
           environmentVariables = mempty,
           alertContents = AlertNotShown
         }
@@ -86,7 +94,8 @@ buildUI _wenv model = tree
                 [childSpacing]
                 [ label "Portals:",
                   button "Get User Information" GetUserInformation,
-                  button "Open File" OpenFile
+                  button "Open File" OpenFile,
+                  button "Add Notification" AddNotification
                 ]
                 `styleBasic` [padding 5],
               hagrid
@@ -177,6 +186,7 @@ handleEvent _wenv _node model = \case
     [ Producer $ \emit -> do
         res <-
           Portal.getUserInformation
+            model.portalClient
             def
               { reason = Just "Allows FlatpakMonomerExample to show user information."
               }
@@ -191,7 +201,7 @@ handleEvent _wenv _node model = \case
     [Model model {alertContents = AlertUserInformation info}]
   OpenFile ->
     [ Producer $ \emit -> do
-        res <- Portal.openFile def
+        res <- Portal.openFile model.portalClient def
         emit (OpenFileStart res)
         Portal.await res >>= \case
           Nothing -> emit CloseAlert
@@ -201,6 +211,19 @@ handleEvent _wenv _node model = \case
     [Model model {alertContents = AlertRequestingOpenFile res}]
   OpenFileFinish results ->
     [Model model {alertContents = AlertOpenFile results}]
+  AddNotification ->
+    [ Producer $ \_emit -> do
+        Portal.addNotification model.portalClient $
+          (addNotificationOptions "testNotification")
+            { title = Just "Test Notification",
+              body = Just "Hello!",
+              priority = Just NotificationPriorityLow,
+              icon = Just (NotificationIconThemed ["weather-snow", "zoom-in"]),
+              defaultAction = Just "testDefaultAction",
+              defaultActionTarget = Just (toVariant ("wibble" :: Text, 42 :: Word32)),
+              buttons = Just [NotificationButton {label_ = "Click Me", action = "testButtonAction", target = Nothing}]
+            }
+    ]
   CancelRequest ->
     let cancel = case model.alertContents of
           AlertRequestingOpenFile res ->
@@ -211,3 +234,10 @@ handleEvent _wenv _node model = \case
      in cancel <> [Model model {alertContents = AlertNotShown}]
   CloseAlert ->
     [Model model {alertContents = AlertNotShown}]
+
+handleNotificationAction :: Text -> Text -> Maybe Variant -> IO ()
+handleNotificationAction notificationId action actionTarget = do
+  putStrLn $ "Received notification action:"
+  putStrLn $ "  Notification Id: " <> show notificationId
+  putStrLn $ "  Action: " <> show action
+  putStrLn $ "  Action Target: " <> show actionTarget
