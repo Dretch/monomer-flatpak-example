@@ -3,6 +3,8 @@
 WORK_DIR=$(pwd)
 VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../package.yaml)
 
+source cabal-hacks.sh
+
 # create a cabal build plan for the published package
 (cd /tmp \
  && cabal update \
@@ -26,6 +28,27 @@ VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../package.yaml)
   --directory=/tmp/monomer-flatpak-example-$VERSION \
   $WORK_DIR/io.github.Dretch.MonomerFlatpakExample.template.yml \
   $WORK_DIR/io.github.Dretch.MonomerFlatpakExample.yml)
+
+# insert hack to workaround cabal bug: https://github.com/haskell/cabal/issues/8923
+head -n 80 io.github.Dretch.MonomerFlatpakExample.yml > io.github.Dretch.MonomerFlatpakExample.yml.fixed
+cat <<'EOF1' >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
+  - |
+    # workaround https://github.com/haskell/cabal/issues/8923 by making pkg-config fail
+    # when given more than one package, instead of silently using only the first package 
+    mkdir -p pkg-config-hack
+    cat <<'EOF2' > pkg-config-hack/pkg-config
+      #!/bin/bash
+      if [ "$1" == "--modversion" ] && [ "$2" != "" ] && [ "$3" != "" ]; then
+        exit 1
+      fi
+      exec /usr/bin/pkg-config $@
+    EOF2
+    chmod +x pkg-config-hack/pkg-config
+    export PATH=$(pwd)/pkg-config-hack:$PATH
+    cabal --config-file=.cabal/config install -j1 --offline --prefix=/app *.tar.gz
+EOF1
+tail -n +82 io.github.Dretch.MonomerFlatpakExample.yml >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
+mv io.github.Dretch.MonomerFlatpakExample.yml.fixed io.github.Dretch.MonomerFlatpakExample.yml
 
 # insert desktop file installation at the end, because it needs assets from this app's cabal package
 cat <<EOF >> io.github.Dretch.MonomerFlatpakExample.yml
