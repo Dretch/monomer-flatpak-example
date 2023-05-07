@@ -44,7 +44,7 @@ The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) all
 - **Q. Why do we need a patched cabal-flatpak?**
 - **A.** The patches make cabal-flatpak include library executables (alex, happy, c2hs) into the Flatpak manifest. The author will try and get this change upstreamed.
 - **Q. Can portals be tested without building the Flatpak?**
-- **A.** Yes! The portal APIs work from regular executables, so long as Flatpak is installed.
+- **A.** Yes! The portal APIs work from regular executables, so long as your desktop environment supports portals.
 
 ## Gotchas
 - Flatpak is Linux only, whereas Monomer itself also works on Windows and MacOS.
