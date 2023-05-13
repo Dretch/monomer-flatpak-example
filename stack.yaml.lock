@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: desktop-portal-0.1.0.0@sha256:2cc19a82f39747cf161009131808d6721e77aac454c7e36925f2454a94501e2f,2825
+    hackage: desktop-portal-0.1.1.0@sha256:3a5a6f62b5c884ab6430b01afdfa83fe2ea67cf3985aca8d29123de16b86baa6,2926
     pantry-tree:
-      sha256: 6aaed8cc5b7e04d175e9e51ce0ef2763320f6e7774e01ff98288adaf1ca2514b
-      size: 989
+      sha256: a6b28bf366eb0d6640a1cac9ccb1042a9f6f10fff77895d13c57829277a50943
+      size: 1136
   original:
-    hackage: desktop-portal-0.1.0.0
+    hackage: desktop-portal-0.1.1.0
 - completed:
     hackage: monomer-1.5.1.0@sha256:18e3ce60c7f5d3fae74bf5ace7515f0e252b12ccc4b71030f948e6fdc1f49a99,16741
     pantry-tree:
@@ -19,15 +19,15 @@ packages:
   original:
     hackage: monomer-1.5.1.0
 - completed:
-    hackage: monomer-hagrid-0.3.0.0@sha256:19f6d3e84478d55733e976bb478a1e389e95d62093f0b9c15ead21abef4147d8,5661
+    hackage: monomer-hagrid-0.3.0.1@sha256:71a216fdbe4ea02012baf66522adb904be1ebdbb9cea36b009f5c1754dfb2e05,5661
     pantry-tree:
-      sha256: 757ff60a9f83a9a69619997d4aee6ab5d020d14b5a7ecab46292a1e9518dfd63
+      sha256: f493f5c0263655d194b9c6549df8ff5038573be20ad04401e2f591833cc90184
       size: 658
   original:
-    hackage: monomer-hagrid-0.3.0.0
+    hackage: monomer-hagrid-0.3.0.1
 snapshots:
 - completed:
-    sha256: 9fa4bece7acfac1fc7930c5d6e24606004b09e80aa0e52e9f68b148201008db9
-    size: 649606
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/18.yaml
-  original: lts-20.18
+    sha256: 126fa33ceb11f5e85ceb4e86d434756bd9a8439e2e5776d306a15fbc63b01e89
+    size: 650041
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/20.yaml
+  original: lts-20.20

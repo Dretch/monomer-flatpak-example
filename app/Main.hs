@@ -10,6 +10,8 @@ import Data.Text (Text, intercalate, pack, unpack)
 import Data.Word (Word32)
 import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), OpenFileResults (..), Request, addNotificationOptions)
 import Desktop.Portal qualified as Portal
+import Desktop.Portal.Settings (ReadAllOptions (..), ReadAllResults)
+import Desktop.Portal.Settings qualified as Settings
 import Monomer
 import Monomer.Hagrid
 import Paths_monomer_flatpak_example (getDataFileName)
@@ -37,6 +39,7 @@ data AlertContents
   | AlertUserInformation GetUserInformationResults
   | AlertRequestingOpenFile (Request OpenFileResults)
   | AlertOpenFile OpenFileResults
+  | AlertSettings ReadAllResults
   deriving (Eq, Show)
 
 data AppEvent
@@ -49,6 +52,8 @@ data AppEvent
   | OpenFileStart (Request OpenFileResults)
   | OpenFileFinish OpenFileResults
   | AddNotification
+  | ReadSettings
+  | ReadSettingsFinish ReadAllResults
   | CancelRequest
   | CloseAlert
 
@@ -95,7 +100,8 @@ buildUI _wenv model = tree
                 [ label "Portals:",
                   button "Get User Information" GetUserInformation,
                   button "Open File" OpenFile,
-                  button "Add Notification" AddNotification
+                  button "Add Notification" AddNotification,
+                  button "Read Settings" ReadSettings
                 ]
                 `styleBasic` [padding 5],
               hagrid
@@ -136,6 +142,11 @@ buildUI _wenv model = tree
           CloseAlert
           [titleCaption "Open File Response"]
           (openFileAlertContents results `styleBasic` [padding 20])
+      AlertSettings results ->
+        alert_
+          CloseAlert
+          [titleCaption "Read Settings Response"]
+          (settingsAlertContents results `styleBasic` [height 400, width 800, padding 10])
 
     userInfoAlertContents results =
       vstack_
@@ -153,6 +164,16 @@ buildUI _wenv model = tree
           label ("Selected URIs: " <> intercalate ", " results.uris),
           label ("Selected Choices: " <> pack (show results.choices))
         ]
+
+    settingsAlertContents :: ReadAllResults -> WidgetNode () AppEvent
+    settingsAlertContents results =
+      hagrid
+        [ (textColumn "Namespace" (.namespace)) {initialWidth = 200},
+          (textColumn "Key" (.key)) {initialWidth = 200},
+          (textColumn "Value" (pack . show . (.value))) {initialWidth = 200},
+          (textColumn "Standard Value" (pack . show . (.standardValue))) {initialWidth = 500}
+        ]
+        (Seq.fromList results.values)
 
 valueColumn :: Int -> EnvironmentInfo -> WidgetNode s e
 valueColumn _ix model =
@@ -224,6 +245,10 @@ handleEvent _wenv _node model = \case
               buttons = Just [NotificationButton {label_ = "Click Me", action = "testButtonAction", target = Nothing}]
             }
     ]
+  ReadSettings ->
+    [Task (ReadSettingsFinish <$> Settings.readAll model.portalClient (ReadAllOptions []))]
+  ReadSettingsFinish results ->
+    [Model model {alertContents = AlertSettings results}]
   CancelRequest ->
     let cancel = case model.alertContents of
           AlertRequestingOpenFile res ->
