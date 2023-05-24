@@ -1,9 +1,9 @@
 module Main (main) where
 
+import Control.Exception (SomeException, catch)
 import Control.Monad (void)
 import DBus (Variant, toVariant)
 import Data.Default.Class (def)
-import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
 import Data.Text (Text, intercalate, pack, unpack)
@@ -40,6 +40,7 @@ data AlertContents
   | AlertRequestingOpenFile (Request OpenFileResults)
   | AlertOpenFile OpenFileResults
   | AlertSettings ReadAllResults
+  | AlertRequestFailed Text
   deriving (Eq, Show)
 
 data AppEvent
@@ -54,6 +55,7 @@ data AppEvent
   | AddNotification
   | ReadSettings
   | ReadSettingsFinish ReadAllResults
+  | RequestFailed Text
   | CancelRequest
   | CloseAlert
 
@@ -147,6 +149,11 @@ buildUI _wenv model = tree
           CloseAlert
           [titleCaption "Read Settings Response"]
           (settingsAlertContents results `styleBasic` [height 400, width 800, padding 10])
+      AlertRequestFailed msg ->
+        alert_
+          CloseAlert
+          [titleCaption "Portal error"]
+          (label_ msg [multiline] `styleBasic` [padding 20])
 
     userInfoAlertContents results =
       vstack_
@@ -154,14 +161,14 @@ buildUI _wenv model = tree
         [ label "Request successful.",
           label ("User Id: " <> results.id),
           label ("User Name: " <> results.name),
-          label ("User Image: " <> fromMaybe "[none]" results.image)
+          label ("User Image: " <> maybe "[none]" pack results.image)
         ]
 
     openFileAlertContents results =
       vstack_
         [childSpacing]
         [ label "Request successful.",
-          label ("Selected URIs: " <> intercalate ", " results.uris),
+          label ("Selected Files: " <> intercalate ", " (pack <$> results.uris)),
           label ("Selected Choices: " <> pack (show results.choices))
         ]
 
@@ -205,16 +212,17 @@ handleEvent _wenv _node model = \case
     [Model model {fileSystem, environmentVariables}]
   GetUserInformation ->
     [ Producer $ \emit -> do
-        res <-
-          Portal.getUserInformation
-            model.portalClient
-            def
-              { reason = Just "Allows FlatpakMonomerExample to show user information."
-              }
-        emit (GetUserInformationStart res)
-        Portal.await res >>= \case
-          Nothing -> emit CloseAlert
-          Just result -> emit (GetUserInformationFinish result)
+        catchRequestErrors emit $ do
+          req <-
+            Portal.getUserInformation
+              model.portalClient
+              def
+                { reason = Just "Allows FlatpakMonomerExample to show user information."
+                }
+          emit (GetUserInformationStart req)
+          Portal.await req >>= \case
+            Nothing -> emit CloseAlert
+            Just result -> emit (GetUserInformationFinish result)
     ]
   GetUserInformationStart res ->
     [Model model {alertContents = AlertRequestingUserInformation res}]
@@ -222,31 +230,37 @@ handleEvent _wenv _node model = \case
     [Model model {alertContents = AlertUserInformation info}]
   OpenFile ->
     [ Producer $ \emit -> do
-        res <- Portal.openFile model.portalClient def
-        emit (OpenFileStart res)
-        Portal.await res >>= \case
-          Nothing -> emit CloseAlert
-          Just result -> emit (OpenFileFinish result)
+        catchRequestErrors emit $ do
+          req <- Portal.openFile model.portalClient def
+          emit (OpenFileStart req)
+          Portal.await req >>= \case
+            Nothing -> emit CloseAlert
+            Just result -> emit (OpenFileFinish result)
     ]
   OpenFileStart res ->
     [Model model {alertContents = AlertRequestingOpenFile res}]
   OpenFileFinish results ->
     [Model model {alertContents = AlertOpenFile results}]
   AddNotification ->
-    [ Producer $ \_emit -> do
-        Portal.addNotification model.portalClient $
-          (addNotificationOptions "testNotification")
-            { title = Just "Test Notification",
-              body = Just "Hello!",
-              priority = Just NotificationPriorityLow,
-              icon = Just (NotificationIconThemed ["weather-snow", "zoom-in"]),
-              defaultAction = Just "testDefaultAction",
-              defaultActionTarget = Just (toVariant ("wibble" :: Text, 42 :: Word32)),
-              buttons = Just [NotificationButton {label_ = "Click Me", action = "testButtonAction", target = Nothing}]
-            }
+    [ Producer $ \emit -> do
+        catchRequestErrors emit $
+          Portal.addNotification model.portalClient $
+            (addNotificationOptions "testNotification")
+              { title = Just "Test Notification",
+                body = Just "Hello!",
+                priority = Just NotificationPriorityLow,
+                icon = Just (NotificationIconThemed ["weather-snow", "zoom-in"]),
+                defaultAction = Just "testDefaultAction",
+                defaultActionTarget = Just (toVariant ("wibble" :: Text, 42 :: Word32)),
+                buttons = Just [NotificationButton {label_ = "Click Me", action = "testButtonAction", target = Nothing}]
+              }
     ]
   ReadSettings ->
-    [Task (ReadSettingsFinish <$> Settings.readAll model.portalClient (ReadAllOptions []))]
+    [ Producer $ \emit ->
+        catchRequestErrors emit $ do
+          result <- Settings.readAll model.portalClient (ReadAllOptions [])
+          emit (ReadSettingsFinish result)
+    ]
   ReadSettingsFinish results ->
     [Model model {alertContents = AlertSettings results}]
   CancelRequest ->
@@ -259,6 +273,14 @@ handleEvent _wenv _node model = \case
      in cancel <> [Model model {alertContents = AlertNotShown}]
   CloseAlert ->
     [Model model {alertContents = AlertNotShown}]
+  RequestFailed msg ->
+    [Model model {alertContents = AlertRequestFailed msg}]
+
+catchRequestErrors :: (AppEvent -> IO ()) -> IO () -> IO ()
+catchRequestErrors emit cmd = catch cmd handler
+  where
+    handler (e :: SomeException) =
+      emit (RequestFailed . pack . show $ e)
 
 handleNotificationAction :: Text -> Text -> Maybe Variant -> IO ()
 handleNotificationAction notificationId action actionTarget = do
