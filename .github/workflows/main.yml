@@ -19,11 +19,6 @@ jobs:
         key: stack
         path: ~/.stack
     
-    - uses: actions/cache@v3
-      with:
-        key: stack-work
-        path: .stack-work
-  
     - run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev
 
     - uses: haskell/actions/setup@v2
