@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: desktop-portal-0.2.0.0@sha256:ff96bfebc204fdc9753353a106c8afd297549b4ac2f6fb7c60571c93ba5c02a9,2976
+    hackage: desktop-portal-0.2.1.0@sha256:879caeaa6565a11620a5be7c81c05814e1ee5969921bda802f6519848ac94643,3042
     pantry-tree:
-      sha256: a195716cf0036fb9dfcba0c3f538d6c5abda6f10008f1c277232fafb16a79799
-      size: 1136
+      sha256: 46e586a6b348a545e9bb42eff72a000d5c77ca0ac1fdc826698185c00ca79902
+      size: 1281
   original:
-    hackage: desktop-portal-0.2.0.0
+    hackage: desktop-portal-0.2.1.0
 - completed:
     hackage: monomer-1.5.1.0@sha256:18e3ce60c7f5d3fae74bf5ace7515f0e252b12ccc4b71030f948e6fdc1f49a99,16741
     pantry-tree:
@@ -27,7 +27,7 @@ packages:
     hackage: monomer-hagrid-0.3.0.1
 snapshots:
 - completed:
-    sha256: 126fa33ceb11f5e85ceb4e86d434756bd9a8439e2e5776d306a15fbc63b01e89
-    size: 650041
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/20.yaml
-  original: lts-20.20
+    sha256: 4c972e067bae16b95961dbfdd12e07f1ee6c8fffabbfa05c3d65100b03f548b7
+    size: 650253
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/23.yaml
+  original: lts-20.23

@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module Main (main) where
 
 import Control.Exception (SomeException, catch)
@@ -8,7 +10,7 @@ import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
 import Data.Text (Text, intercalate, pack, unpack)
 import Data.Word (Word32)
-import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), OpenFileResults (..), Request, addNotificationOptions)
+import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), OpenFileResults (..), Request, addNotificationOptions, openURIOptions)
 import Desktop.Portal qualified as Portal
 import Desktop.Portal.Settings (ReadAllOptions (..), ReadAllResults)
 import Desktop.Portal.Settings qualified as Settings
@@ -17,6 +19,7 @@ import Monomer.Hagrid
 import Paths_monomer_flatpak_example (getDataFileName)
 import System.Directory (getCurrentDirectory, getHomeDirectory, listDirectory)
 import System.Environment (getEnvironment)
+import Text.URI.QQ (uri)
 import Prelude hiding (unwords)
 
 data AppModel = AppModel
@@ -55,6 +58,7 @@ data AppEvent
   | AddNotification
   | ReadSettings
   | ReadSettingsFinish ReadAllResults
+  | OpenURI
   | RequestFailed Text
   | CancelRequest
   | CloseAlert
@@ -103,7 +107,8 @@ buildUI _wenv model = tree
                   button "Get User Information" GetUserInformation,
                   button "Open File" OpenFile,
                   button "Add Notification" AddNotification,
-                  button "Read Settings" ReadSettings
+                  button "Read Settings" ReadSettings,
+                  button "Open URI" OpenURI
                 ]
                 `styleBasic` [padding 5],
               hagrid
@@ -263,6 +268,11 @@ handleEvent _wenv _node model = \case
     ]
   ReadSettingsFinish results ->
     [Model model {alertContents = AlertSettings results}]
+  OpenURI ->
+    [ Producer $ \emit ->
+        catchRequestErrors emit $ do
+          void (Portal.openURI model.portalClient (openURIOptions [uri|https://www.bbc.com/weather|]))
+    ]
   CancelRequest ->
     let cancel = case model.alertContents of
           AlertRequestingOpenFile res ->
