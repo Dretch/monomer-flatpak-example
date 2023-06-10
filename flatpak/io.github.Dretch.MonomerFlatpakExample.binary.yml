@@ -1,0 +1,34 @@
+# See README.md in project root for usage.
+app-id: io.github.Dretch.MonomerFlatpakExample.binary
+runtime: org.freedesktop.Platform
+runtime-version: '22.08'
+sdk: org.freedesktop.Sdk
+command: run-app
+finish-args:
+- --socket=fallback-x11
+- --socket=wayland
+- --share=ipc
+- --device=dri
+modules:
+  - shared-modules/glu/glu-9.json
+  - shared-modules/glew/glew.json
+  - name: assets
+    buildsystem: simple
+    build-commands:
+    - tar -xvf assets.tar -C /app
+    sources:
+    - type: file
+      path: binary/assets.tar
+  - name: exe
+    buildsystem: simple
+    build-commands:
+    - install -Dt /app/bin app run-app
+    sources:
+    - type: file
+      dest-filename: app
+      path: binary/monomer-flatpak-example
+    - type: script
+      dest-filename: run-app
+      commands:
+      - '#!/bin/bash'
+      - 'monomer_flatpak_example_datadir=/app/assets /app/bin/app'

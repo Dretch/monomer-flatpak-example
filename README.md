@@ -34,6 +34,23 @@ The basic app is working as a Flatpak and has also been published onto [Flathub]
 ## Portals
 The [XDG Desktop Portals APIs](https://flatpak.github.io/xdg-desktop-portal) allow reading/writing files, accessing microphones/webcams, opening URIs, printing, etc. This app includes some buttons to demonstrate basic portal functionality (provided via the [desktop-portal](https://github.com/Dretch/haskell-desktop-portal) library).
 
+## Building a Flatpak bundle locally
+It can sometimes be useful to build a Flatpak bundle locally, without first publishing to Hackage. This is possible without too many hacks, by building a regular executable and bundling that straight into a Flatpak, along with the assets. It does require an extra manifest though.
+
+For example, to build and run this project locally:
+```bash
+# compile the executable and assets into files that can be injected into the flatpak bundle
+stack clean --full
+stack --local-bin-path flatpak/binary install
+tar -cf flatpak/binary/assets.tar assets/*
+
+# build a manifest that refers to the executable and assets, rather than the source code
+flatpak-builder --user --install --force-clean flatpak/binary/build flatpak/io.github.Dretch.MonomerFlatpakExample.binary.yml
+
+# run the app
+flatpak run io.github.Dretch.MonomerFlatpakExample.binary
+```
+
 ## FAQs
 - **Q. How to load fonts/images within the app?**
 - **A.** Use [the normal Cabal mechanism](https://neilmitchell.blogspot.com/2008/02/adding-data-files-using-cabal.html) (for example, see how the fonts are loaded in this app).

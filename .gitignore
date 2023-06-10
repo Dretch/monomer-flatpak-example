@@ -23,5 +23,5 @@ cabal.project.local~
 .notes
 .flatpak-builder
 flatpak/io.github.Dretch.MonomerFlatpakExample.yml
-flatpak/io.github.Dretch.test.yml
 flatpak/pkg-config-hack
+flatpak/binary
