@@ -45,7 +45,7 @@ cat <<'EOF1' >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
     EOF2
     chmod +x pkg-config-hack/pkg-config
     export PATH=$(pwd)/pkg-config-hack:$PATH
-    cabal --config-file=.cabal/config install -j1 --offline --prefix=/app *.tar.gz
+    cabal --config-file=.cabal/config v1-install -j1 --offline --prefix=/app *.tar.gz
 EOF1
 tail -n +82 io.github.Dretch.MonomerFlatpakExample.yml >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
 mv io.github.Dretch.MonomerFlatpakExample.yml.fixed io.github.Dretch.MonomerFlatpakExample.yml
