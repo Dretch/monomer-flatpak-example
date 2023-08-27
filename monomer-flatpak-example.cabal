@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           monomer-flatpak-example
-version:        0.0.9.0
+version:        0.0.10.0
 synopsis:       Monomer Flatpak Example Application.
 description:    An example of how to package Monomer apps with Flatpak.
 category:       GUI, Flatpak
