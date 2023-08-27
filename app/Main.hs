@@ -8,24 +8,25 @@ import DBus (Variant, toVariant)
 import Data.Default.Class (def)
 import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
-import Data.Text (Text, intercalate, pack, unpack)
+import Data.Text (Text, pack, unpack)
 import Data.Word (Word32)
-import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), OpenFileResults (..), Request, addNotificationOptions, openURIOptions)
+import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), Request, addNotificationOptions, openURIOptions)
 import Desktop.Portal qualified as Portal
 import Desktop.Portal.Settings (ReadAllOptions (..), ReadAllResults)
 import Desktop.Portal.Settings qualified as Settings
+import Documents (documents)
 import Monomer
 import Monomer.Hagrid
 import Paths_monomer_flatpak_example (getDataFileName)
 import System.Directory (getCurrentDirectory, getHomeDirectory, listDirectory)
 import System.Environment (getEnvironment)
 import Text.URI.QQ (uri)
-import Prelude hiding (unwords)
 
 data AppModel = AppModel
   { portalClient :: Client,
     fileSystem :: Seq EnvironmentInfo,
     environmentVariables :: Seq EnvironmentInfo,
+    showDocuments :: Bool,
     alertContents :: AlertContents
   }
   deriving (Eq, Show)
@@ -40,10 +41,8 @@ data AlertContents
   = AlertNotShown
   | AlertRequestingUserInformation (Request GetUserInformationResults)
   | AlertUserInformation GetUserInformationResults
-  | AlertRequestingOpenFile (Request OpenFileResults)
-  | AlertOpenFile OpenFileResults
   | AlertSettings ReadAllResults
-  | AlertRequestFailed Text
+  | AlertMessage {title :: Text, body :: Text}
   deriving (Eq, Show)
 
 data AppEvent
@@ -52,13 +51,12 @@ data AppEvent
   | GetUserInformation
   | GetUserInformationStart (Request GetUserInformationResults)
   | GetUserInformationFinish GetUserInformationResults
-  | OpenFile
-  | OpenFileStart (Request OpenFileResults)
-  | OpenFileFinish OpenFileResults
+  | ShowAlertMessage {title :: Text, body :: Text}
   | AddNotification
   | ReadSettings
   | ReadSettingsFinish ReadAllResults
   | OpenURI
+  | SetShowDocuments Bool
   | RequestFailed Text
   | CancelRequest
   | CloseAlert
@@ -77,6 +75,7 @@ main = do
         { portalClient,
           fileSystem = mempty,
           environmentVariables = mempty,
+          showDocuments = False,
           alertContents = AlertNotShown
         }
     config regularFontPath boldFontPath iconPath =
@@ -105,7 +104,7 @@ buildUI _wenv model = tree
                 [childSpacing]
                 [ label "Portals:",
                   button "Get User Information" GetUserInformation,
-                  button "Open File" OpenFile,
+                  button "Documents" (SetShowDocuments True),
                   button "Add Notification" AddNotification,
                   button "Read Settings" ReadSettings,
                   button "Open URI" OpenURI
@@ -122,9 +121,18 @@ buildUI _wenv model = tree
                 ]
                 model.environmentVariables
             ],
+          maybeDocuments,
           -- nodeKey to workaround https://github.com/fjvallarino/monomer/issues/265
           maybeAlert `nodeKey` pack (show model.alertContents)
         ]
+
+    maybeDocuments
+      | model.showDocuments =
+          alert_
+            (SetShowDocuments False)
+            [titleCaption "Documents"]
+            (documents model.portalClient ShowAlertMessage `styleBasic` [padding 20])
+      | otherwise = spacer `nodeVisible` False
 
     maybeAlert = case model.alertContents of
       AlertNotShown ->
@@ -134,31 +142,21 @@ buildUI _wenv model = tree
           CancelRequest
           [titleCaption "Getting User Information"]
           (label "Wait or cancel by closing this alert..." `styleBasic` [padding 20])
-      AlertRequestingOpenFile _ ->
+      AlertMessage {title, body} ->
         alert_
-          CancelRequest
-          [titleCaption "Opening File..."]
-          (label "Wait or cancel by closing this alert..." `styleBasic` [padding 20])
+          CloseAlert
+          [titleCaption title]
+          (label_ body [multiline] `styleBasic` [padding 20])
       AlertUserInformation info ->
         alert_
           CloseAlert
           [titleCaption "Get User Information Response"]
           (userInfoAlertContents info `styleBasic` [padding 20])
-      AlertOpenFile results ->
-        alert_
-          CloseAlert
-          [titleCaption "Open File Response"]
-          (openFileAlertContents results `styleBasic` [padding 20])
       AlertSettings results ->
         alert_
           CloseAlert
           [titleCaption "Read Settings Response"]
           (settingsAlertContents results `styleBasic` [height 400, width 800, padding 10])
-      AlertRequestFailed msg ->
-        alert_
-          CloseAlert
-          [titleCaption "Portal error"]
-          (label_ msg [multiline] `styleBasic` [padding 20])
 
     userInfoAlertContents results =
       vstack_
@@ -167,14 +165,6 @@ buildUI _wenv model = tree
           label ("User Id: " <> results.id),
           label ("User Name: " <> results.name),
           label ("User Image: " <> maybe "[none]" pack results.image)
-        ]
-
-    openFileAlertContents results =
-      vstack_
-        [childSpacing]
-        [ label "Request successful.",
-          label ("Selected Files: " <> intercalate ", " (pack <$> results.uris)),
-          label ("Selected Choices: " <> pack (show results.choices))
         ]
 
     settingsAlertContents :: ReadAllResults -> WidgetNode () AppEvent
@@ -233,19 +223,8 @@ handleEvent _wenv _node model = \case
     [Model model {alertContents = AlertRequestingUserInformation res}]
   GetUserInformationFinish info ->
     [Model model {alertContents = AlertUserInformation info}]
-  OpenFile ->
-    [ Producer $ \emit -> do
-        catchRequestErrors emit $ do
-          req <- Portal.openFile model.portalClient def
-          emit (OpenFileStart req)
-          Portal.await req >>= \case
-            Nothing -> emit CloseAlert
-            Just result -> emit (OpenFileFinish result)
-    ]
-  OpenFileStart res ->
-    [Model model {alertContents = AlertRequestingOpenFile res}]
-  OpenFileFinish results ->
-    [Model model {alertContents = AlertOpenFile results}]
+  SetShowDocuments showDocuments ->
+    [Model model {showDocuments}]
   AddNotification ->
     [ Producer $ \emit -> do
         catchRequestErrors emit $
@@ -273,10 +252,10 @@ handleEvent _wenv _node model = \case
         catchRequestErrors emit $ do
           void (Portal.openURI model.portalClient (openURIOptions [uri|https://www.bbc.com/weather|]))
     ]
+  ShowAlertMessage {title, body} ->
+    [Model model {alertContents = AlertMessage {title, body}}]
   CancelRequest ->
     let cancel = case model.alertContents of
-          AlertRequestingOpenFile res ->
-            [Producer (const (Portal.cancel res))]
           AlertRequestingUserInformation res ->
             [Producer (const (Portal.cancel res))]
           _ -> []
@@ -284,7 +263,7 @@ handleEvent _wenv _node model = \case
   CloseAlert ->
     [Model model {alertContents = AlertNotShown}]
   RequestFailed msg ->
-    [Model model {alertContents = AlertRequestFailed msg}]
+    [Model model {alertContents = AlertMessage "Portal Error" msg}]
 
 catchRequestErrors :: (AppEvent -> IO ()) -> IO () -> IO ()
 catchRequestErrors emit cmd = catch cmd handler
