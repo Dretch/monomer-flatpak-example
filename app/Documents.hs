@@ -10,9 +10,9 @@ import Data.Text (Text, intercalate, pack)
 import Data.Text.Lazy (toStrict)
 import Data.Text.Lazy.Builder (Builder)
 import Data.Text.Lazy.Builder qualified as Builder
-import Desktop.Portal (Client, directory)
+import Desktop.Portal (Client, FileSpec (..), directory)
 import Desktop.Portal qualified as Portal
-import Desktop.Portal.Documents (DocumentId (..), FileIdentifier (..))
+import Desktop.Portal.Documents (DocumentId (..))
 import Desktop.Portal.Documents qualified as Documents
 import Desktop.Portal.FileChooser (OpenFileResults)
 import Monomer
@@ -129,7 +129,7 @@ handleEvent parentAlert _env _node model = \case
         filePath <- (<> "/hello.txt") <$> Portal.getXdgDataHome
         writeFile filePath "Hello!"
         catchErrors "Add File Failed" emit $ do
-          void (Documents.add model.portalClient (DocumentFilePath filePath) True True)
+          void (Documents.add model.portalClient (FileSpecPath filePath) True True)
         emit RefreshDocuments
     ]
   ShowAlert {title, body} ->

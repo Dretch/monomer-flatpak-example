@@ -1,5 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
-
 module Main (main) where
 
 import Control.Exception (SomeException, catch)
@@ -10,22 +8,23 @@ import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
 import Data.Text (Text, pack, unpack)
 import Data.Word (Word32)
-import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), Request, addNotificationOptions, openURIOptions)
+import Desktop.Portal (AddNotificationOptions (..), Client, GetUserInformationOptions (..), GetUserInformationResults (..), NotificationButton (..), NotificationIcon (..), NotificationPriority (..), Request, addNotificationOptions)
 import Desktop.Portal qualified as Portal
 import Desktop.Portal.Settings (ReadAllOptions (..), ReadAllResults)
 import Desktop.Portal.Settings qualified as Settings
 import Documents (documents)
 import Monomer
 import Monomer.Hagrid
+import OpenURI (openURI)
 import Paths_monomer_flatpak_example (getDataFileName)
 import System.Directory (getCurrentDirectory, getHomeDirectory, listDirectory)
 import System.Environment (getEnvironment)
-import Text.URI.QQ (uri)
 
 data AppModel = AppModel
   { portalClient :: Client,
     fileSystem :: Seq EnvironmentInfo,
     environmentVariables :: Seq EnvironmentInfo,
+    showOpenURI :: Bool,
     showDocuments :: Bool,
     alertContents :: AlertContents
   }
@@ -55,7 +54,7 @@ data AppEvent
   | AddNotification
   | ReadSettings
   | ReadSettingsFinish ReadAllResults
-  | OpenURI
+  | SetShowOpenURI Bool
   | SetShowDocuments Bool
   | RequestFailed Text
   | CancelRequest
@@ -75,6 +74,7 @@ main = do
         { portalClient,
           fileSystem = mempty,
           environmentVariables = mempty,
+          showOpenURI = False,
           showDocuments = False,
           alertContents = AlertNotShown
         }
@@ -107,7 +107,7 @@ buildUI _wenv model = tree
                   button "Documents" (SetShowDocuments True),
                   button "Add Notification" AddNotification,
                   button "Read Settings" ReadSettings,
-                  button "Open URI" OpenURI
+                  button "Open URI" (SetShowOpenURI True)
                 ]
                 `styleBasic` [padding 5],
               hagrid
@@ -121,16 +121,25 @@ buildUI _wenv model = tree
                 ]
                 model.environmentVariables
             ],
+          maybeOpenURI,
           maybeDocuments,
           -- nodeKey to workaround https://github.com/fjvallarino/monomer/issues/265
           maybeAlert `nodeKey` pack (show model.alertContents)
         ]
 
+    maybeOpenURI
+      | model.showOpenURI =
+          alert_
+            (SetShowOpenURI False)
+            [titleCaption "OpenURI Portal"]
+            (openURI model.portalClient ShowAlertMessage `styleBasic` [padding 20])
+      | otherwise = spacer `nodeVisible` False
+
     maybeDocuments
       | model.showDocuments =
           alert_
             (SetShowDocuments False)
-            [titleCaption "Documents"]
+            [titleCaption "Documents Portal"]
             (documents model.portalClient ShowAlertMessage `styleBasic` [padding 20])
       | otherwise = spacer `nodeVisible` False
 
@@ -223,6 +232,8 @@ handleEvent _wenv _node model = \case
     [Model model {alertContents = AlertRequestingUserInformation res}]
   GetUserInformationFinish info ->
     [Model model {alertContents = AlertUserInformation info}]
+  SetShowOpenURI showOpenURI ->
+    [Model model {showOpenURI}]
   SetShowDocuments showDocuments ->
     [Model model {showDocuments}]
   AddNotification ->
@@ -247,11 +258,6 @@ handleEvent _wenv _node model = \case
     ]
   ReadSettingsFinish results ->
     [Model model {alertContents = AlertSettings results}]
-  OpenURI ->
-    [ Producer $ \emit ->
-        catchRequestErrors emit $ do
-          void (Portal.openURI model.portalClient (openURIOptions [uri|https://www.bbc.com/weather|]))
-    ]
   ShowAlertMessage {title, body} ->
     [Model model {alertContents = AlertMessage {title, body}}]
   CancelRequest ->
