@@ -1,4 +1,4 @@
-# Flatpak Monomer Example
+# Monomer Flatpak Example
 
 A demonstration of the [Monomer](https://github.com/fjvallarino/monomer) framework running inside [Flatpak](https://flatpak.org/).
 
