@@ -266,8 +266,9 @@ handleEvent _wenv _node model = \case
     [Model model {alertContents = AlertSettings results}]
   RetrieveSecret ->
     [ Producer $ \emit -> do
-        secret <- Portal.retrieveSecret model.portalClient
-        emit (ShowAlertMessage "Retrieved Secret Successfully" (hex secret))
+        catchRequestErrors emit $ do
+          secret <- Portal.retrieveSecret model.portalClient
+          emit (ShowAlertMessage "Retrieved Secret Successfully" (hex secret))
     ]
   ShowAlertMessage {title, body} ->
     [Model model {alertContents = AlertMessage {title, body}}]
