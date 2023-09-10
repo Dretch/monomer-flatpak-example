@@ -3,6 +3,10 @@ module Main (main) where
 import Control.Exception (SomeException, catch)
 import Control.Monad (void)
 import DBus (Variant, toVariant)
+import Data.Bits (Bits (shiftR), (.&.))
+import Data.ByteString (ByteString)
+import Data.ByteString qualified as ByteString
+import Data.Char (intToDigit)
 import Data.Default.Class (def)
 import Data.Sequence (Seq)
 import Data.Sequence qualified as Seq
@@ -54,6 +58,7 @@ data AppEvent
   | AddNotification
   | ReadSettings
   | ReadSettingsFinish ReadAllResults
+  | RetrieveSecret
   | SetShowOpenURI Bool
   | SetShowDocuments Bool
   | RequestFailed Text
@@ -107,7 +112,8 @@ buildUI _wenv model = tree
                   button "Documents" (SetShowDocuments True),
                   button "Add Notification" AddNotification,
                   button "Read Settings" ReadSettings,
-                  button "Open URI" (SetShowOpenURI True)
+                  button "Open URI" (SetShowOpenURI True),
+                  button "Retrieve Secret" RetrieveSecret
                 ]
                 `styleBasic` [padding 5],
               hagrid
@@ -258,6 +264,11 @@ handleEvent _wenv _node model = \case
     ]
   ReadSettingsFinish results ->
     [Model model {alertContents = AlertSettings results}]
+  RetrieveSecret ->
+    [ Producer $ \emit -> do
+        secret <- Portal.retrieveSecret model.portalClient
+        emit (ShowAlertMessage "Retrieved Secret Successfully" (hex secret))
+    ]
   ShowAlertMessage {title, body} ->
     [Model model {alertContents = AlertMessage {title, body}}]
   CancelRequest ->
@@ -283,3 +294,8 @@ handleNotificationAction notificationId action actionTarget = do
   putStrLn $ "  Notification Id: " <> show notificationId
   putStrLn $ "  Action: " <> show action
   putStrLn $ "  Action Target: " <> show actionTarget
+
+hex :: ByteString -> Text
+hex = pack . ByteString.foldr' (\w acc -> hexChar (shiftR w 4) : hexChar (w .&. 0b1111) : acc) []
+  where
+    hexChar = intToDigit . fromIntegral
