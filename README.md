@@ -74,6 +74,6 @@ flatpak run io.github.Dretch.MonomerFlatpakExample.binary
 ## Development Guide
 ### To format the source code
 ```bash
-# This needs at least ormolu 0.5.0.0 to avoid breaking dot-record syntax
+# Should use Ormolu 0.7.1.0
 ormolu --mode inplace $(find . -name '*.hs')
 ```
