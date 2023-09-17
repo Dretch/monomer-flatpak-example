@@ -26,15 +26,15 @@ packages:
   original:
     hackage: monomer-1.5.1.0
 - completed:
-    hackage: monomer-hagrid-0.3.1.0@sha256:49a2a817d1a97ac8c7493bc1828fa4af6303779f7a71022ddc1b42f4b638bf5d,5561
+    hackage: monomer-hagrid-0.3.1.1@sha256:3f1977428fa9a022a57f5622dfcf083a380bd478a5e719c99dc3f6a0fb6e337a,5564
     pantry-tree:
-      sha256: c69dac16a3718b7f5edb9ddb25dcd5b6fbd4355c46bee22fe01bbaf2dd0603e4
-      size: 659
+      sha256: 3faeb276e564b428f60665c0fc5c6a398994027f23287680615233996ac48225
+      size: 662
   original:
-    hackage: monomer-hagrid-0.3.1.0
+    hackage: monomer-hagrid-0.3.1.1
 snapshots:
 - completed:
-    sha256: 2fc12a405ab6f7eac73eb11a0ca5ccca0e956bd2848db780c140b7406ff9ebb5
-    size: 640035
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/9.yaml
-  original: lts-21.9
+    sha256: 9313df78f49519315342f4c51ffc5da12659d3735f8ac3c54a1fb98ff874474e
+    size: 640036
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/12.yaml
+  original: lts-21.12
