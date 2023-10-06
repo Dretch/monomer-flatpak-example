@@ -10,12 +10,13 @@ category:            GUI, Flatpak
 maintainer:          garethdanielsmith@gmail.com
 
 dependencies:
+- async
 - base >= 4.7 && < 5
 - bytestring
 - containers
 - data-default-class
 - dbus
-- desktop-portal >= 0.3.1.0 && < 0.4
+- desktop-portal >= 0.3.2.0 && < 0.4
 - directory
 - modern-uri
 - monomer
@@ -44,4 +45,12 @@ executables:
   monomer-flatpak-example:
     main: Main.hs
     source-dirs: app
+    include-dirs:
+    - cbits
+    c-sources:
+    - cbits/pipewire_hacks.c
     ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+    pkg-config-dependencies:
+    - libspa-0.2
+    - libpipewire-0.3
+    build-tools: c2hs

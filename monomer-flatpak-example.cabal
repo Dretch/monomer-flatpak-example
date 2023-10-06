@@ -31,8 +31,12 @@ source-repository head
 executable monomer-flatpak-example
   main-is: Main.hs
   other-modules:
+      Bindings.PipeWire
+      Bindings.Util
+      Camera
       Documents
       OpenURI
+      PipeWire
       Paths_monomer_flatpak_example
   hs-source-dirs:
       app
@@ -50,13 +54,23 @@ executable monomer-flatpak-example
       RecordWildCards
       ScopedTypeVariables
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  include-dirs:
+      cbits
+  c-sources:
+      cbits/pipewire_hacks.c
+  pkgconfig-depends:
+      libspa-0.2
+    , libpipewire-0.3
+  build-tools:
+      c2hs
   build-depends:
-      base >=4.7 && <5
+      async
+    , base >=4.7 && <5
     , bytestring
     , containers
     , data-default-class
     , dbus
-    , desktop-portal >=0.3.1.0 && <0.4
+    , desktop-portal >=0.3.2.0 && <0.4
     , directory
     , modern-uri
     , monomer

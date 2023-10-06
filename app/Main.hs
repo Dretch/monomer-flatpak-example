@@ -1,5 +1,6 @@
 module Main (main) where
 
+import Camera (camera)
 import Control.Exception (SomeException, catch)
 import Control.Monad (void)
 import DBus (Variant, toVariant)
@@ -30,6 +31,7 @@ data AppModel = AppModel
     environmentVariables :: Seq EnvironmentInfo,
     showOpenURI :: Bool,
     showDocuments :: Bool,
+    showCamera :: Bool,
     alertContents :: AlertContents
   }
   deriving (Eq, Show)
@@ -61,6 +63,7 @@ data AppEvent
   | RetrieveSecret
   | SetShowOpenURI Bool
   | SetShowDocuments Bool
+  | SetShowCamera Bool
   | RequestFailed Text
   | CancelRequest
   | CloseAlert
@@ -81,6 +84,7 @@ main = do
           environmentVariables = mempty,
           showOpenURI = False,
           showDocuments = False,
+          showCamera = False,
           alertContents = AlertNotShown
         }
     config regularFontPath boldFontPath iconPath =
@@ -113,7 +117,8 @@ buildUI _wenv model = tree
                   button "Add Notification" AddNotification,
                   button "Read Settings" ReadSettings,
                   button "Open URI" (SetShowOpenURI True),
-                  button "Retrieve Secret" RetrieveSecret
+                  button "Retrieve Secret" RetrieveSecret,
+                  button "Camera" (SetShowCamera True)
                 ]
                 `styleBasic` [padding 5],
               hagrid
@@ -129,6 +134,7 @@ buildUI _wenv model = tree
             ],
           maybeOpenURI,
           maybeDocuments,
+          maybeCamera,
           -- nodeKey to workaround https://github.com/fjvallarino/monomer/issues/265
           maybeAlert `nodeKey` pack (show model.alertContents)
         ]
@@ -147,6 +153,14 @@ buildUI _wenv model = tree
             (SetShowDocuments False)
             [titleCaption "Documents Portal"]
             (documents model.portalClient ShowAlertMessage `styleBasic` [padding 20])
+      | otherwise = spacer `nodeVisible` False
+
+    maybeCamera
+      | model.showCamera =
+          alert_
+            (SetShowCamera False)
+            [titleCaption "Camera Portal"]
+            (camera model.portalClient ShowAlertMessage `styleBasic` [padding 20])
       | otherwise = spacer `nodeVisible` False
 
     maybeAlert = case model.alertContents of
@@ -242,6 +256,8 @@ handleEvent _wenv _node model = \case
     [Model model {showOpenURI}]
   SetShowDocuments showDocuments ->
     [Model model {showDocuments}]
+  SetShowCamera showCamera ->
+    [Model model {showCamera}]
   AddNotification ->
     [ Producer $ \emit -> do
         catchRequestErrors emit $
