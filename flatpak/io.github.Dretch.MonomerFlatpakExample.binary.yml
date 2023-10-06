@@ -1,7 +1,7 @@
 # See README.md in project root for usage.
 app-id: io.github.Dretch.MonomerFlatpakExample.binary
 runtime: org.freedesktop.Platform
-runtime-version: '22.08'
+runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 command: run-app
 finish-args:
