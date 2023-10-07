@@ -21,7 +21,7 @@ jobs:
     
     - run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev libspa-0.2-dev libpipewire-0.3-dev
 
-    - uses: haskell/actions/setup@v2
+    - uses: haskell-actions/setup@v2
       with:
         stack-setup-ghc: true
         enable-stack: true
