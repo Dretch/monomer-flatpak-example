@@ -20,7 +20,7 @@ jobs:
         ghc-version: '9.2.5'
 
     - name: 'Install Libraries'
-      run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev
+      run: sudo apt-get update && sudo apt-get install --assume-yes libsdl2-dev libglew-dev libspa-0.2-dev libpipewire-0.3-dev
 
     - name: 'Generate Manifest'
       run: cd flatpak && ./generate-manifest.sh
