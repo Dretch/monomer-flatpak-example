@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           monomer-flatpak-example
-version:        0.0.13.1
+version:        0.0.13.2
 synopsis:       Monomer Flatpak Example Application.
 description:    An example of how to package Monomer apps with Flatpak.
 category:       GUI, Flatpak
@@ -15,6 +15,8 @@ maintainer:     garethdanielsmith@gmail.com
 license:        MIT
 license-file:   LICENSE
 build-type:     Simple
+extra-source-files:
+    cbits/pipewire_hacks.h
 data-files:
     fonts/Cantarell/Cantarell-Bold.ttf
     fonts/Cantarell/Cantarell-Regular.ttf
@@ -57,7 +59,6 @@ executable monomer-flatpak-example
   include-dirs:
       cbits
   c-sources:
-      cbits/pipewire_hacks.h
       cbits/pipewire_hacks.c
   pkgconfig-depends:
       libspa-0.2

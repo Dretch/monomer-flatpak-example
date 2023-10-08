@@ -1,5 +1,5 @@
 name:                monomer-flatpak-example
-version:             0.0.13.1
+version:             0.0.13.2
 license:             MIT
 synopsis:            Monomer Flatpak Example Application.
 description:         An example of how to package Monomer apps with Flatpak.
@@ -41,6 +41,9 @@ default-extensions:
 data-dir: assets
 data-files: '**/*'
 
+extra-source-files:
+- cbits/pipewire_hacks.h
+
 executables:
   monomer-flatpak-example:
     main: Main.hs
@@ -48,7 +51,6 @@ executables:
     include-dirs:
     - cbits
     c-sources:
-    - cbits/pipewire_hacks.h
     - cbits/pipewire_hacks.c
     ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
     pkg-config-dependencies:
