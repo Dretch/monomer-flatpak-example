@@ -11,7 +11,7 @@ source cabal-hacks.sh
  && rm -rf monomer-flatpak-example-$VERSION \
  && cabal unpack monomer-flatpak-example-$VERSION \
  && cd monomer-flatpak-example-$VERSION \
- && cabal new-build --dry-run --disable-tests --disable-benchmarks --with-compiler=ghc-9.4.7)
+ && cabal new-build --dry-run --disable-tests --disable-benchmarks)
 
 # add packages from the cabal build plan into our template flatpak manifest, using a
 # patched cabal-flatpak so that alex, happy and c2hs are included in the manifest
