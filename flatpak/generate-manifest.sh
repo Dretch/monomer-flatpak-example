@@ -29,6 +29,7 @@ source cabal-hacks.sh
   $WORK_DIR/io.github.Dretch.MonomerFlatpakExample.yml)
 
 # insert hack to workaround cabal bug: https://github.com/haskell/cabal/issues/8923
+# also use -j16 because GHC breaks on the flathub builder with the default (effectively -j64)
 head -n 82 io.github.Dretch.MonomerFlatpakExample.yml > io.github.Dretch.MonomerFlatpakExample.yml.fixed
 cat <<'EOF1' >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
   - |
@@ -44,7 +45,7 @@ cat <<'EOF1' >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
     EOF2
     chmod +x pkg-config-hack/pkg-config
     export PATH=$(pwd)/pkg-config-hack:$PATH
-    cabal --config-file=.cabal/config install -j$FLATPAK_BUILDER_N_JOBS --install-method=symlink --installdir=/app/bin monomer-flatpak-example
+    cabal --config-file=.cabal/config install -j16 --install-method=symlink --installdir=/app/bin monomer-flatpak-example
     find /app/cabal/ghc-* -mindepth 1 -not -path '*/monomer-flatpak-example*' -a -not -path '*/incoming' -delete
 EOF1
 tail -n +87 io.github.Dretch.MonomerFlatpakExample.yml >> io.github.Dretch.MonomerFlatpakExample.yml.fixed
