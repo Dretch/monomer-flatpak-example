@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           monomer-flatpak-example
-version:        0.0.13.2
+version:        0.0.14.0
 synopsis:       Monomer Flatpak Example Application.
 description:    An example of how to package Monomer apps with Flatpak.
 category:       GUI, Flatpak
@@ -39,6 +39,7 @@ executable monomer-flatpak-example
       Documents
       OpenURI
       PipeWire
+      Util
       Paths_monomer_flatpak_example
   hs-source-dirs:
       app
@@ -72,7 +73,7 @@ executable monomer-flatpak-example
     , containers
     , data-default-class
     , dbus
-    , desktop-portal >=0.3.2.0 && <0.4
+    , desktop-portal ==0.4.*
     , directory
     , modern-uri
     , monomer

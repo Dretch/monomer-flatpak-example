@@ -18,6 +18,7 @@ import Desktop.Portal.FileChooser (OpenFileResults)
 import Monomer
 import Monomer.Hagrid
 import System.Directory (doesDirectoryExist, getDirectoryContents)
+import Util (getXdgDataDir)
 
 data DocumentsModel = DocumentsModel
   { portalClient :: Client,
@@ -65,7 +66,7 @@ buildUI _wenv model =
         [childSpacing]
         [ button "Open File" OpenFile,
           button "Open Directory" OpenDirectory,
-          button "Add File (~/.var/app/$appId/data/hello.txt)" AddFile,
+          button "Add File from $XDG_DATA_HOME" AddFile,
           button "Delete Selected" DeleteSelectedDocuments
             `nodeEnabled` (Seq.filter (.selected) model.documents /= mempty)
         ],
@@ -126,7 +127,7 @@ handleEvent parentAlert _env _node model = \case
     ]
   AddFile ->
     [ Producer $ \emit -> do
-        filePath <- (<> "/hello.txt") <$> Portal.getXdgDataHome
+        filePath <- (<> "/hello.txt") <$> getXdgDataDir
         writeFile filePath "Hello!"
         catchErrors "Add File Failed" emit $ do
           void (Documents.add model.portalClient (FileSpecPath filePath) True True)

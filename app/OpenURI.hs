@@ -13,6 +13,7 @@ import Monomer
 import System.Directory (createDirectoryIfMissing)
 import Text.URI (URI, render)
 import Text.URI.QQ (uri)
+import Util (getXdgDataDir)
 
 newtype OpenURIModel = OpenURIModel
   { portalClient :: Client
@@ -58,14 +59,14 @@ handleEvent parentAlert _env _node model = \case
   OpenFile ->
     [ Producer $ \emit -> do
         catchErrors "Open File Failed" emit $ do
-          filePath <- (<> "/hello.txt") <$> Portal.getXdgDataHome
+          filePath <- (<> "/hello.txt") <$> getXdgDataDir
           writeFile filePath "Hello!"
           void $ OpenURI.openFile model.portalClient (OpenURI.openFileOptions (FileSpecPath filePath))
     ]
   OpenDirectory ->
     [ Producer $ \emit -> do
         catchErrors "Open Directory Failed" emit $ do
-          dirPath <- (<> "/hello-directory") <$> Portal.getXdgDataHome
+          dirPath <- (<> "/hello-directory") <$> getXdgDataDir
           let filePath = dirPath <> "/hello.txt"
           createDirectoryIfMissing True dirPath
           writeFile filePath "Hello!"
