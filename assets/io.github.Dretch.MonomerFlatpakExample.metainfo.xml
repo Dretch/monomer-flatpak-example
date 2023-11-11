@@ -23,6 +23,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.0.14.0" date="2023-11-11">
+      <description>
+      Internal library updates.
+      </description>
+    </release>
     <release version="0.0.13.0" date="2023-10-07">
       <description>
       Add a basic demo of the Camera API. Update to v23.08 of the Flatpak platform.
