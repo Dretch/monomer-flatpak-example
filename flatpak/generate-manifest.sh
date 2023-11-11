@@ -5,13 +5,18 @@ VERSION=$(sed -nr 's/^version:\s*(.*)/\1/p' ../package.yaml)
 
 source cabal-hacks.sh
 
+# run cabal, but using the GHC version from stack, rather than the default GHC.
+stackcabal () {
+  stack exec cabal --no-ghc-package-path -- $@
+}
+
 # create a cabal build plan for the published package
 (cd /tmp \
- && cabal update \
+ && stackcabal update \
  && rm -rf monomer-flatpak-example-$VERSION \
- && cabal unpack monomer-flatpak-example-$VERSION \
+ && stackcabal unpack monomer-flatpak-example-$VERSION \
  && cd monomer-flatpak-example-$VERSION \
- && cabal new-build --dry-run --disable-tests --disable-benchmarks)
+ && stackcabal new-build --dry-run --disable-tests --disable-benchmarks)
 
 # add packages from the cabal build plan into our template flatpak manifest, using a
 # patched cabal-flatpak so that alex, happy and c2hs are included in the manifest
@@ -19,8 +24,8 @@ source cabal-hacks.sh
  && wget https://hub.darcs.net/Dretch/cabal-flatpak/dist -O cabal-flatpak-patched \
  && unzip -o cabal-flatpak-patched \
  && cd cabal-flatpak \
- && cabal build \
- && cabal run cabal-flatpak -- \
+ && stackcabal build \
+ && stackcabal run cabal-flatpak -- \
   --cabal-install \
   --arch=x86_64 \
   --build-library-exes \
