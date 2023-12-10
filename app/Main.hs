@@ -196,7 +196,7 @@ buildUI _wenv model = tree
           label ("User Image: " <> maybe "[none]" pack results.image)
         ]
 
-    settingsAlertContents :: ReadAllResults -> WidgetNode () AppEvent
+    settingsAlertContents :: ReadAllResults -> WidgetNode AppModel AppEvent
     settingsAlertContents results =
       hagrid
         [ (textColumn "Namespace" (.namespace)) {initialWidth = 200},
