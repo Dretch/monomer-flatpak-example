@@ -23,6 +23,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.0.15.2" date="2023-12-29">
+      <description>
+      Another fix!
+      </description>
+    </release>
     <release version="0.0.15.1" date="2023-12-29">
       <description>
       Fix broken document portal demos.

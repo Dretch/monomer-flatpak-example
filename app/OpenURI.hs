@@ -62,7 +62,7 @@ handleEvent parentAlert _env _node model = \case
   OpenFile ->
     [ Producer $ \emit -> do
         catchErrors "Open File Failed" emit $ do
-          filePath <- (</> [osp|/hello.txt|]) <$> getXdgDataDir
+          filePath <- (</> [osp|hello.txt|]) <$> getXdgDataDir
           writeFile filePath "Hello!"
           void $ OpenURI.openFile model.portalClient (OpenURI.openFileOptions (FileSpecPath filePath))
     ]
