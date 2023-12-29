@@ -133,7 +133,7 @@ handleEvent parentAlert _env _node model = \case
     ]
   AddFile ->
     [ Producer $ \emit -> do
-        filePath <- (</> [osp|/hello.txt|]) <$> getXdgDataDir
+        filePath <- (</> [osp|hello.txt|]) <$> getXdgDataDir
         writeFile filePath "Hello!"
         catchErrors "Add File Failed" emit $ do
           void (Documents.add model.portalClient (FileSpecPath filePath) True True)
