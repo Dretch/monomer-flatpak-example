@@ -5,26 +5,19 @@
 
 packages:
 - completed:
-    hackage: desktop-portal-0.4.0.0@sha256:21fe93678fd7a9b1349f2e8fd01b200cb2a1c75ddc0d71993e9566bcab0a2c27,3552
+    hackage: desktop-portal-0.6.0.0@sha256:6a500a76eaa19d00e71733ec703e51f5ece259d82fb76053ea66f3f847298cdb,3916
     pantry-tree:
-      sha256: 664ec53f05e684b49bc73a056e023acfc346dba12fb337d4bfb263900af9caeb
+      sha256: 377b991d19a1b3c5f0837086f212c2e53a52908a435c5e243155872c3168fde7
       size: 1720
   original:
-    hackage: desktop-portal-0.4.0.0
+    hackage: desktop-portal-0.6.0.0
 - completed:
-    hackage: dbus-1.3.1@sha256:d450d01c4983ded1b7d29fd8b918432806e97d3e829aab914d1e5cb305ca99bc,4593
+    hackage: file-io-0.1.0.2@sha256:ac1aaf99de6b8131a97dc623c115dc1135d02b81d583ca7806b736ea3c9ac7f9,1301
     pantry-tree:
-      sha256: 65b45fb68fa609e02c260fe03e41b1470cf22909971fd1e32a7433c70f48639e
-      size: 2797
+      sha256: b7371c948a63e1aa8c79bfda19b50a8ec34fe7d80f94d26570a94d310169657d
+      size: 382
   original:
-    hackage: dbus-1.3.1
-- completed:
-    hackage: monomer-1.6.0.0@sha256:ae58f6c6fcd859204002824ed11fe1e82bdcc3ac91c644b3978323788ea73e41,17371
-    pantry-tree:
-      sha256: 37c5a068ad8be8db1348328a036450cd0be98f0212d42e0b539fa37b35b98751
-      size: 15189
-  original:
-    hackage: monomer-1.6.0.0
+    hackage: file-io-0.1.0.2
 - completed:
     hackage: monomer-hagrid-0.3.1.2@sha256:63d1ad0221f40c67a0d9bfd9ea032743a4281f697ae71f8fa61608c0a3565ae4,5576
     pantry-tree:
@@ -34,7 +27,7 @@ packages:
     hackage: monomer-hagrid-0.3.1.2
 snapshots:
 - completed:
-    sha256: abcc4a65c15c7c2313f1a87f01bfd4d910516e1930b99653eef1d2d006515916
-    size: 640074
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/24.yaml
-  original: lts-21.24
+    sha256: 53a2800f7fe0c4628af0e7d5e985707dd3af9863ac3983a43c835dbaa8ed5f35
+    size: 714094
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/3.yaml
+  original: lts-22.3

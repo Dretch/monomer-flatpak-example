@@ -24,6 +24,7 @@ import OpenURI (openURI)
 import Paths_monomer_flatpak_example (getDataFileName)
 import System.Directory (getCurrentDirectory, getHomeDirectory, listDirectory)
 import System.Environment (getEnvironment)
+import Util (osPathToText)
 
 data AppModel = AppModel
   { portalClient :: Client,
@@ -193,7 +194,7 @@ buildUI _wenv model = tree
         [ label "Request successful.",
           label ("User Id: " <> results.id),
           label ("User Name: " <> results.name),
-          label ("User Image: " <> maybe "[none]" pack results.image)
+          label ("User Image: " <> maybe "[none]" osPathToText results.image)
         ]
 
     settingsAlertContents :: ReadAllResults -> WidgetNode AppModel AppEvent

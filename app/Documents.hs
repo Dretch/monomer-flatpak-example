@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module Documents (documents) where
 
 import Control.Exception (SomeException, catch)
@@ -17,12 +19,16 @@ import Desktop.Portal.Documents qualified as Documents
 import Desktop.Portal.FileChooser (OpenFileResults)
 import Monomer
 import Monomer.Hagrid
-import System.Directory (doesDirectoryExist, getDirectoryContents)
-import Util (getXdgDataDir)
+import System.Directory.OsPath (doesDirectoryExist, getDirectoryContents)
+import System.File.OsPath (writeFile)
+import System.OsPath (OsPath, osp, (</>))
+import System.OsPath qualified as OsPath
+import Util (getXdgDataDir, osPathToText)
+import Prelude hiding (writeFile)
 
 data DocumentsModel = DocumentsModel
   { portalClient :: Client,
-    mountPoint :: FilePath,
+    mountPoint :: OsPath,
     documents :: Seq Document
   }
   deriving (Eq, Show)
@@ -36,7 +42,7 @@ data Document = Document
 
 data DocumentsEvent
   = RefreshDocuments
-  | RefreshDocumentsFinish FilePath (Seq Document)
+  | RefreshDocumentsFinish OsPath (Seq Document)
   | SetDocumentSelected DocumentId Bool
   | DeleteSelectedDocuments
   | OpenFile
@@ -52,7 +58,7 @@ documents portalClient parentAlert =
     initialModel =
       DocumentsModel
         { portalClient,
-          mountPoint = "...",
+          mountPoint = [osp|...|],
           documents = mempty
         }
 
@@ -127,7 +133,7 @@ handleEvent parentAlert _env _node model = \case
     ]
   AddFile ->
     [ Producer $ \emit -> do
-        filePath <- (<> "/hello.txt") <$> getXdgDataDir
+        filePath <- (</> [osp|/hello.txt|]) <$> getXdgDataDir
         writeFile filePath "Hello!"
         catchErrors "Add File Failed" emit $ do
           void (Documents.add model.portalClient (FileSpecPath filePath) True True)
@@ -146,44 +152,46 @@ openFileResponseAlert :: OpenFileResults -> Text
 openFileResponseAlert results =
   "Request successful.\n\n"
     <> "Selected Files: "
-    <> intercalate ", " (pack <$> results.uris)
+    <> intercalate ", " (osPathToText <$> results.uris)
     <> "\n"
     <> "Selected Choices: "
     <> pack (show results.choices)
 
-getDocuments :: FilePath -> IO (Seq Document)
+getDocuments :: OsPath -> IO (Seq Document)
 getDocuments storePath = do
   paths <- getDirectoryContents storePath
   flip foldMap paths $ \path -> do
-    let fullPath = storePath <> "/" <> path
+    let fullPath = storePath </> path
     isDir <- doesDirectoryExist fullPath
-    if isDir && path /= "by-app" && path /= "." && path /= ".."
+    if isDir && path /= [osp|by-app|] && path /= [osp|.|] && path /= [osp|..|]
       then do
         ls <- lsRecursive fullPath
-        pure (Seq.singleton Document {id = DocumentId (pack path), ls, selected = False})
+        docId <- pack <$> OsPath.decodeUtf path
+        pure (Seq.singleton Document {id = DocumentId docId, ls, selected = False})
       else pure mempty
 
-lsRecursive :: FilePath -> IO Text
+lsRecursive :: OsPath -> IO Text
 lsRecursive path = do
   displayPath <- withSlashIfDir path path
-  childOutputs <- lsRecursive' "" path ""
+  childOutputs <- lsRecursive' "" path mempty
   pure . toStrict . Builder.toLazyText $
     displayPath <> "\n" <> childOutputs
   where
-    lsRecursive' :: Builder -> FilePath -> FilePath -> IO Builder
+    lsRecursive' :: Builder -> OsPath -> OsPath -> IO Builder
     lsRecursive' indent dirPath fileName = do
-      let fullPath = dirPath <> "/" <> fileName
+      let fullPath = dirPath </> fileName
       childPaths <- doesDirectoryExist fullPath >>= bool (pure []) (getDirectoryContents fullPath)
       childOutputs <- forM childPaths $ \childPath -> do
-        if childPath == "." || childPath == ".."
+        if childPath == [osp|.|] || childPath == [osp|..|]
           then pure ""
           else lsRecursive' (indent <> "    ") fullPath childPath
       displayPath <- withSlashIfDir fullPath fileName
-      case fileName of
-        "" -> pure (mconcat childOutputs)
-        _ -> pure (indent <> displayPath <> "\n" <> mconcat childOutputs)
+      if fileName == mempty
+        then pure (mconcat childOutputs)
+        else pure (indent <> displayPath <> "\n" <> mconcat childOutputs)
 
-withSlashIfDir :: FilePath -> FilePath -> IO Builder
+withSlashIfDir :: OsPath -> OsPath -> IO Builder
 withSlashIfDir fullPath displayPath = do
   slash <- bool "" "/" <$> doesDirectoryExist fullPath
-  pure (Builder.fromString displayPath <> slash)
+  filePath <- OsPath.decodeUtf displayPath
+  pure (Builder.fromString filePath <> slash)

@@ -10,10 +10,13 @@ import Desktop.Portal qualified as Portal
 import Desktop.Portal.OpenURI (openURIOptions)
 import Desktop.Portal.OpenURI qualified as OpenURI
 import Monomer
-import System.Directory (createDirectoryIfMissing)
+import System.Directory.OsPath (createDirectoryIfMissing)
+import System.File.OsPath (writeFile)
+import System.OsPath (osp, (</>))
 import Text.URI (URI, render)
 import Text.URI.QQ (uri)
 import Util (getXdgDataDir)
+import Prelude hiding (writeFile)
 
 newtype OpenURIModel = OpenURIModel
   { portalClient :: Client
@@ -59,15 +62,15 @@ handleEvent parentAlert _env _node model = \case
   OpenFile ->
     [ Producer $ \emit -> do
         catchErrors "Open File Failed" emit $ do
-          filePath <- (<> "/hello.txt") <$> getXdgDataDir
+          filePath <- (</> [osp|/hello.txt|]) <$> getXdgDataDir
           writeFile filePath "Hello!"
           void $ OpenURI.openFile model.portalClient (OpenURI.openFileOptions (FileSpecPath filePath))
     ]
   OpenDirectory ->
     [ Producer $ \emit -> do
         catchErrors "Open Directory Failed" emit $ do
-          dirPath <- (<> "/hello-directory") <$> getXdgDataDir
-          let filePath = dirPath <> "/hello.txt"
+          dirPath <- (</> [osp|hello-directory|]) <$> getXdgDataDir
+          let filePath = dirPath </> [osp|hello.txt|]
           createDirectoryIfMissing True dirPath
           writeFile filePath "Hello!"
           void $ OpenURI.openDirectory model.portalClient (OpenURI.openDirectoryOptions (FileSpecPath dirPath))

@@ -1,5 +1,5 @@
 name:                monomer-flatpak-example
-version:             0.0.14.0
+version:             0.0.15.0
 license:             MIT
 synopsis:            Monomer Flatpak Example Application.
 description:         An example of how to package Monomer apps with Flatpak.
@@ -16,8 +16,10 @@ dependencies:
 - containers
 - data-default-class
 - dbus
-- desktop-portal >= 0.4 && < 0.5
+- desktop-portal >= 0.6 && < 0.7
 - directory
+- filepath
+- file-io
 - modern-uri
 - monomer
 - monomer-hagrid

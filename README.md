@@ -74,6 +74,6 @@ flatpak run io.github.Dretch.MonomerFlatpakExample.binary
 ## Development Guide
 ### To format the source code
 ```bash
-# Should use Ormolu 0.7.1.0
-ormolu --mode inplace $(find . -name '*.hs')
+# Should use Ormolu 0.7.3.0
+ormolu --mode inplace $(find app -name '*.hs')
 ```
